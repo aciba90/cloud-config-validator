@@ -1,27 +1,28 @@
-use axum::extract::Json;
-use serde::Deserialize;
+use axum::{extract::Json, response::{IntoResponse, self}};
 use serde_json::Value;
+use axum::http::StatusCode;
 
-#[derive(Debug, Deserialize)]
-pub struct CloudConfig {
-    format: Format,
-    payload: String,
-}
+use crate::validator::{CloudConfig, Format, Validator, Validation};
+use serde::Serialize;
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-enum Format {
-    Yaml,
-    Json,
-}
+pub async fn validate(Json(payload): Json<CloudConfig>) -> (StatusCode, Json<Value>)
+//jsonschema::output::BasicOutput<'static>
+{
+    let validator = Validator::new();
 
-pub async fn validate(Json(payload): Json<CloudConfig>) -> String {
-    let resp = format!("email: {}, format: {:?}", payload.payload, payload.format);
+    let resp = format!(
+        "email: {}, format: {:?}",
+        payload.payload(),
+        payload.format()
+    );
     dbg!(&payload);
-    let payload: Value = match payload.format {
-        Format::Yaml => serde_yaml::from_str(&payload.payload).unwrap(),
-        Format::Json => serde_json::from_str(&payload.payload).unwrap(),
+    let payload: Value = match payload.format() {
+        Format::Yaml => serde_yaml::from_str(&payload.payload()).unwrap(),
+        Format::Json => serde_json::from_str(&payload.payload()).unwrap(),
     };
     dbg!(&payload);
-    resp
+    let resp = validator.validate(&payload);
+    let resp = serde_json::to_value(resp).unwrap();
+    (StatusCode::OK, response::Json(resp) )
+    // resp
 }
