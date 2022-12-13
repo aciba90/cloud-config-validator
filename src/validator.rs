@@ -3,7 +3,7 @@ use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-const SCHEMA: &str = include_str!("../schemas/versions.schema.cloud-config.json");
+const SCHEMA: &str = include_str!("../schemas/versions.schema.cloud-config.resolved.1.json");
 
 #[derive(Debug, Deserialize)]
 pub struct CloudConfig {
@@ -77,7 +77,6 @@ impl From<BasicOutput<'_>> for Validation {
             BasicOutput::Valid(out_annotations) => {
                 let mut annotations = Vec::with_capacity(out_annotations.len());
                 for annotation in out_annotations {
-                    dbg!(annotation.value());
                     // XXX: avoid to_mut copy
                     if let Value::Object(obj) = &annotation.value().to_mut() {
                         if let Some(Value::Bool(true)) = obj.get("deprecated") {
@@ -85,7 +84,7 @@ impl From<BasicOutput<'_>> for Validation {
                                 description: "DEPRECATED".to_string(),
                                 instance_path: annotation.instance_location().to_string(),
                             };
-                            annotations.push(new_annotation.into());
+                            annotations.push(new_annotation);
                         }
                         // TODO: extract `deprecated_msg` if present
                     }
@@ -117,6 +116,7 @@ pub struct Validator {
 }
 
 impl Validator {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         // TODO: add mechanism to fetch the schema on demand from schemastore
         Validator::from_vendored_schema()
