@@ -28,6 +28,7 @@ pub enum Format {
     Json,
 }
 
+// TODO: serialize as boolean
 #[derive(Debug, PartialEq, Clone, Serialize)]
 enum ValResult {
     Valid,
@@ -222,27 +223,6 @@ mod test_validate {
         );
         let out = compiled_schema.apply(&instance).basic();
         dbg!(&out);
-        match &out {
-            BasicOutput::Valid(annotations) => {
-                for annotation in annotations {
-                    println!(
-                        "Value: {} at path {}",
-                        annotation.value(),
-                        annotation.instance_location()
-                    )
-                }
-            }
-            BasicOutput::Invalid(errors) => {
-                // dbg!(&errors);
-                for error in errors {
-                    println!(
-                        "Error: {} at path {}",
-                        error.error_description(),
-                        error.instance_location()
-                    )
-                }
-            }
-        }
 
         let validation: Validation = out.into();
         let expected_validation = Validation {
