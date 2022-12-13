@@ -8,6 +8,7 @@ use serde_json::Value;
 use crate::validator::{CloudConfig, Format, Validator};
 
 pub async fn validate(Json(payload): Json<CloudConfig>) -> (StatusCode, Json<Value>) {
+    // TODO: share the validator at higher level point
     let validator = Validator::new();
 
     let payload: Value = match payload.format() {
