@@ -1,0 +1,12 @@
+  [
+    {
+      "in": {
+        "format": "yaml",
+        "payload": "asdfaf: 1"
+      },
+      "out": {
+        "status_code": 200,
+        "json": {"annotations": [], "errors": [], "is_valid": "Valid"}
+      }
+    }
+  ]

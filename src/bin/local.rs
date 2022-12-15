@@ -10,7 +10,7 @@
 // TODO:
 // - make it programmable
 // - /run ?
-const SOCK: &str = "/tmp/cloud-config-validator/socket";
+const SOCK: &str = "/tmp/cloud-config-validator/sock";
 
 #[cfg(unix)]
 #[tokio::main]
