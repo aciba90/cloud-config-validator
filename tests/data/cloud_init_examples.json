@@ -1,0 +1,1697 @@
+[
+  {
+    "name": "cc_keyboard",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set keyboard layout to \"us\"\nkeyboard:\n  layout: us\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_keyboard",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set specific keyboard layout, model, variant, options\nkeyboard:\n  layout: de\n  model: pc105\n  variant: nodeadkeys\n  options: compose:rwin\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_timezone",
+    "in": {
+      "format": "yaml",
+      "payload": "timezone: US/Eastern"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_zypper_add_repo",
+    "in": {
+      "format": "yaml",
+      "payload": "zypper:\n  repos:\n    - id: opensuse-oss\n      name: os-oss\n      baseurl: http://dl.opensuse.org/dist/leap/v/repo/oss/\n      enabled: 1\n      autorefresh: 1\n    - id: opensuse-oss-update\n      name: os-oss-up\n      baseurl: http://dl.opensuse.org/dist/leap/v/update\n      # any setting per\n      # https://en.opensuse.org/openSUSE:Standards_RepoInfo\n      # enable and autorefresh are on by default\n  config:\n    reposdir: /etc/zypp/repos.dir\n    servicesdir: /etc/zypp/services.d\n    download.use_deltarpm: true\n    # any setting in /etc/zypp/zypp.conf\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_yum_add_repo",
+    "in": {
+      "format": "yaml",
+      "payload": "yum_repos:\n  my_repo:\n    baseurl: http://blah.org/pub/epel/testing/5/$basearch/\nyum_repo_dir: /store/custom/yum.repos.d\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_yum_add_repo",
+    "in": {
+      "format": "yaml",
+      "payload": "# Enable cloud-init upstream's daily testing repo for EPEL 8 to\n# install latest cloud-init from tip of `main` for testing.\nyum_repos:\n  cloud-init-daily:\n    name: Copr repo for cloud-init-dev owned by @cloud-init\n    baseurl: https://download.copr.fedorainfracloud.org/results/@cloud-init/cloud-init-dev/epel-8-$basearch/\n    type: rpm-md\n    skip_if_unavailable: true\n    gpgcheck: true\n    gpgkey: https://download.copr.fedorainfracloud.org/results/@cloud-init/cloud-init-dev/pubkey.gpg\n    enabled_metadata: 1\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_yum_add_repo",
+    "in": {
+      "format": "yaml",
+      "payload": "# Add the file /etc/yum.repos.d/epel_testing.repo which can then\n# subsequently be used by yum for later operations.\nyum_repos:\n# The name of the repository\n epel-testing:\n   baseurl: https://download.copr.fedorainfracloud.org/results/@cloud-init/cloud-init-dev/pubkey.gpg\n   enabled: false\n   failovermethod: priority\n   gpgcheck: true\n   gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL\n   name: Extra Packages for Enterprise Linux 5 - Testing\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_yum_add_repo",
+    "in": {
+      "format": "yaml",
+      "payload": "# Any yum repo configuration can be passed directly into\n# the repository file created. See: man yum.conf for supported\n# config keys.\n#\n# Write /etc/yum.conf.d/my-package-stream.repo with gpgkey checks\n# on the repo data of the repository enabled.\nyum_repos:\n  my package stream:\n    baseurl: http://blah.org/pub/epel/testing/5/$basearch/\n    mirrorlist: http://some-url-to-list-of-baseurls\n    repo_gpgcheck: 1\n    enable_gpgcheck: true\n    gpgkey: https://url.to.ascii-armored-gpg-key\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_write_files",
+    "in": {
+      "format": "yaml",
+      "payload": "# Write out base64 encoded content to /etc/sysconfig/selinux\nwrite_files:\n- encoding: b64\n  content: CiMgVGhpcyBmaWxlIGNvbnRyb2xzIHRoZSBzdGF0ZSBvZiBTRUxpbnV4...\n  owner: root:root\n  path: /etc/sysconfig/selinux\n  permissions: '0644'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_write_files",
+    "in": {
+      "format": "yaml",
+      "payload": "# Appending content to an existing file\nwrite_files:\n- content: |\n    15 * * * * root ship_logs\n  path: /etc/crontab\n  append: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_write_files",
+    "in": {
+      "format": "yaml",
+      "payload": "# Provide gziped binary content\nwrite_files:\n- encoding: gzip\n  content: !!binary |\n      H4sIAIDb/U8C/1NW1E/KzNMvzuBKTc7IV8hIzcnJVyjPL8pJ4QIA6N+MVxsAAAA=\n  path: /usr/bin/hello\n  permissions: '0755'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_write_files",
+    "in": {
+      "format": "yaml",
+      "payload": "# Create an empty file on the system\nwrite_files:\n- path: /root/CLOUD_INIT_WAS_HERE\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_write_files",
+    "in": {
+      "format": "yaml",
+      "payload": "# Defer writing the file until after the package (Nginx) is\n# installed and its user is created alongside\nwrite_files:\n- path: /etc/nginx/conf.d/example.com.conf\n  content: |\n    server {\n        server_name example.com;\n        listen 80;\n        root /var/www;\n        location / {\n            try_files $uri $uri/ $uri.html =404;\n        }\n    }\n  owner: 'nginx:nginx'\n  permissions: '0640'\n  defer: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ca_certs",
+    "in": {
+      "format": "yaml",
+      "payload": "ca_certs:\n  remove_defaults: true\n  trusted:\n    - single_line_cert\n    - |\n      -----BEGIN CERTIFICATE-----\n      YOUR-ORGS-TRUSTED-CA-CERT-HERE\n      -----END CERTIFICATE-----\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_autoinstall",
+    "in": {
+      "format": "yaml",
+      "payload": "# Tell the live-server installer to provide dhcp6 network config\n# and LVM on a disk matching the serial number prefix CT\nautoinstall:\n  version: 1\n  network:\n    version: 2\n    ethernets:\n      enp0s31f6:\n        dhcp6: yes\n  storage:\n    layout:\n      name: lvm\n      match:\n        serial: CT*\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_etc_hosts",
+    "in": {
+      "format": "yaml",
+      "payload": "# Do not update or manage /etc/hosts at all. This is the default behavior.\n#\n# Whatever is present at instance boot time will be present after boot.\n# User changes will not be overwritten.\nmanage_etc_hosts: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_etc_hosts",
+    "in": {
+      "format": "yaml",
+      "payload": "# Manage /etc/hosts with cloud-init.\n# On every boot, /etc/hosts will be re-written from\n# ``/etc/cloud/templates/hosts.tmpl``.\n#\n# The strings '$hostname' and '$fqdn' are replaced in the template\n# with the appropriate values either from the config-config ``fqdn`` or\n# ``hostname`` if provided. When absent, the cloud metadata will be\n# checked for ``local-hostname` which can be split into <hostname>.<fqdn>.\n#\n# To make modifications persistent across a reboot, you must modify\n# ``/etc/cloud/templates/hosts.tmpl``.\nmanage_etc_hosts: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_etc_hosts",
+    "in": {
+      "format": "yaml",
+      "payload": "# Update /etc/hosts every boot providing a \"localhost\" 127.0.1.1 entry\n# with the latest hostname and fqdn as provided by either IMDS or\n# cloud-config.\n# All other entries will be left as is.\n# 'ping `hostname`' will ping 127.0.1.1\nmanage_etc_hosts: localhost\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_salt_minion",
+    "in": {
+      "format": "yaml",
+      "payload": "salt_minion:\n    pkg_name: salt-minion\n    service_name: salt-minion\n    config_dir: /etc/salt\n    conf:\n        master: salt.example.com\n    grains:\n        role:\n            - web\n    public_key: |\n        ------BEGIN PUBLIC KEY-------\n        <key data>\n        ------END PUBLIC KEY-------\n    private_key: |\n        ------BEGIN PRIVATE KEY------\n        <key data>\n        ------END PRIVATE KEY-------\n    pki_dir: /etc/salt/pki/minion\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_resolv_conf",
+    "in": {
+      "format": "yaml",
+      "payload": "manage_resolv_conf: true\nresolv_conf:\n  nameservers:\n    - 8.8.8.8\n    - 8.8.4.4\n  searchdomains:\n    - foo.example.com\n    - bar.example.com\n  domain: example.com\n  sortlist:\n    - 10.0.0.1/255\n    - 10.0.0.2\n  options:\n    rotate: true\n    timeout: 1\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_set_passwords",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set a default password that would need to be changed\n# at first login\nssh_pwauth: true\npassword: password1\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_set_passwords",
+    "in": {
+      "format": "yaml",
+      "payload": "# Disable ssh password authentication\n# Don't require users to change their passwords on next login\n# Set the password for user1 to be 'password1' (OS does hashing)\n# Set the password for user2 to a pre-hashed password\n# Set the password for user3 to be a randomly generated password,\n#   which will be written to the system console\nssh_pwauth: false\nchpasswd:\n  expire: false\n  users:\n    - name: user1\n      password: password1\n      type: text\n    - name: user2\n      password: $6$rounds=4096$5DJ8a9WMTEzIo5J4$Yms6imfeBvf3Yfu84mQBerh18l7OR1Wm1BJXZqFSpJ6BVas0AYJqIjP7czkOaAZHZi1kxQ5Y1IhgWN8K9NgxR1\n    - name: user3\n      type: RANDOM\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_landscape",
+    "in": {
+      "format": "yaml",
+      "payload": "# To discover additional supported client keys, run\n# man landscape-config.\nlandscape:\n    client:\n        url: \"https://landscape.canonical.com/message-system\"\n        ping_url: \"http://landscape.canonical.com/ping\"\n        data_path: \"/var/lib/landscape/client\"\n        http_proxy: \"http://my.proxy.com/foobar\"\n        https_proxy: \"https://my.proxy.com/foobar\"\n        tags: \"server,cloud\"\n        computer_title: \"footitle\"\n        registration_key: \"fookey\"\n        account_name: \"fooaccount\"\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_landscape",
+    "in": {
+      "format": "yaml",
+      "payload": "# Any keys below `client` are optional and the default values will\n# be used.\nlandscape:\n    client: {}\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_final_message",
+    "in": {
+      "format": "yaml",
+      "payload": "final_message: |\n  cloud-init has finished\n  version: $version\n  timestamp: $timestamp\n  datasource: $datasource\n  uptime: $uptime\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "# By default: when ``preserve_hostname`` is not specified cloud-init\n# updates ``/etc/hostname`` per-boot based on the cloud provided\n# ``local-hostname`` setting. If you manually change ``/etc/hostname``\n# after boot cloud-init will no longer modify it.\n#\n# This default cloud-init behavior is equivalent to this cloud-config:\npreserve_hostname: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "# Prevent cloud-init from updating the system hostname.\npreserve_hostname: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "# Prevent cloud-init from updating ``/etc/hostname``\npreserve_hostname: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set hostname to \"external.fqdn.me\" instead of \"myhost\"\nfqdn: external.fqdn.me\nhostname: myhost\nprefer_fqdn_over_hostname: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_update_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set hostname to \"external\" instead of \"external.fqdn.me\" when\n# cloud metadata provides the ``local-hostname``: \"external.fqdn.me\".\nprefer_fqdn_over_hostname: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_runcmd",
+    "in": {
+      "format": "yaml",
+      "payload": "runcmd:\n    - [ ls, -l, / ]\n    - [ sh, -xc, \"echo $(date) ': hello world!'\" ]\n    - [ sh, -c, echo \"=========hello world'=========\" ]\n    - ls -l /root\n    - [ wget, \"http://example.org\", -O, /tmp/index.html ]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_growpart",
+    "in": {
+      "format": "yaml",
+      "payload": "growpart:\n  mode: auto\n  devices: [\"/\"]\n  ignore_growroot_disabled: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_growpart",
+    "in": {
+      "format": "yaml",
+      "payload": "growpart:\n  mode: growpart\n  devices:\n    - \"/\"\n    - \"/dev/vdb1\"\n  ignore_growroot_disabled: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_bootcmd",
+    "in": {
+      "format": "yaml",
+      "payload": "bootcmd:\n    - echo 192.168.1.130 us.archive.ubuntu.com > /etc/hosts\n    - [ cloud-init-per, once, mymkfs, mkfs, /dev/vdb ]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_grub_dpkg",
+    "in": {
+      "format": "yaml",
+      "payload": "grub_dpkg:\n  enabled: true\n  grub-pc/install_devices: /dev/sda\n  grub-pc/install_devices_empty: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apk_configure",
+    "in": {
+      "format": "yaml",
+      "payload": "# Keep the existing /etc/apk/repositories file unaltered.\napk_repos:\n    preserve_repositories: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apk_configure",
+    "in": {
+      "format": "yaml",
+      "payload": "# Create repositories file for Alpine v3.12 main and community\n# using default mirror site.\napk_repos:\n    alpine_repo:\n        community_enabled: true\n        version: 'v3.12'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apk_configure",
+    "in": {
+      "format": "yaml",
+      "payload": "# Create repositories file for Alpine Edge main, community, and\n# testing using a specified mirror site and also a local repo.\napk_repos:\n    alpine_repo:\n        base_url: 'https://some-alpine-mirror/alpine'\n        community_enabled: true\n        testing_enabled: true\n        version: 'edge'\n    local_repo_base_url: 'https://my-local-server/local-alpine'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ssh_import_id",
+    "in": {
+      "format": "yaml",
+      "payload": "ssh_import_id:\n - user\n - gh:user\n - lp:user\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ssh",
+    "in": {
+      "format": "yaml",
+      "payload": "ssh_keys:\n  rsa_private: |\n    -----BEGIN RSA PRIVATE KEY-----\n    MIIBxwIBAAJhAKD0YSHy73nUgysO13XsJmd4fHiFyQ+00R7VVu2iV9Qco\n    ...\n    -----END RSA PRIVATE KEY-----\n  rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEAoPRhIfLvedSDKw7Xd ...\n  rsa_certificate: |\n    ssh-rsa-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQt ...\n  dsa_private: |\n    -----BEGIN DSA PRIVATE KEY-----\n    MIIBxwIBAAJhAKD0YSHy73nUgysO13XsJmd4fHiFyQ+00R7VVu2iV9Qco\n    ...\n    -----END DSA PRIVATE KEY-----\n  dsa_public: ssh-dsa AAAAB3NzaC1yc2EAAAABIwAAAGEAoPRhIfLvedSDKw7Xd ...\n  dsa_certificate: |\n    ssh-dsa-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQt ...\nssh_authorized_keys:\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEA3FSyQwBI6Z+nCSjUU ...\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA3I7VUf2l5gSn5uavROsc5HRDpZ ...\nssh_deletekeys: true\nssh_genkeytypes: [rsa, dsa, ecdsa, ed25519]\ndisable_root: true\ndisable_root_opts: no-port-forwarding,no-agent-forwarding,no-X11-forwarding\nallow_public_ssh_keys: true\nssh_quiet_keygen: true\nssh_publish_hostkeys:\n  enabled: true\n  blacklist: [dsa]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_configure",
+    "in": {
+      "format": "yaml",
+      "payload": "apt:\n  preserve_sources_list: false\n  disable_suites:\n    - $RELEASE-updates\n    - backports\n    - $RELEASE\n    - mysuite\n  primary:\n    - arches:\n        - amd64\n        - i386\n        - default\n      uri: 'http://us.archive.ubuntu.com/ubuntu'\n      search:\n        - 'http://cool.but-sometimes-unreachable.com/ubuntu'\n        - 'http://us.archive.ubuntu.com/ubuntu'\n      search_dns: false\n    - arches:\n        - s390x\n        - arm64\n      uri: 'http://archive-to-use-for-arm64.example.com/ubuntu'\n\n  security:\n    - arches:\n        - default\n      search_dns: true\n  sources_list: |\n      deb $MIRROR $RELEASE main restricted\n      deb-src $MIRROR $RELEASE main restricted\n      deb $PRIMARY $RELEASE universe restricted\n      deb $SECURITY $RELEASE-security multiverse\n  debconf_selections:\n      set1: the-package the-package/some-flag boolean true\n  conf: |\n      APT {\n          Get {\n              Assume-Yes 'true';\n              Fix-Broken 'true';\n          }\n      }\n  proxy: 'http://[[user][:pass]@]host[:port]/'\n  http_proxy: 'http://[[user][:pass]@]host[:port]/'\n  ftp_proxy: 'ftp://[[user][:pass]@]host[:port]/'\n  https_proxy: 'https://[[user][:pass]@]host[:port]/'\n  sources:\n      source1:\n          keyid: 'keyid'\n          keyserver: 'keyserverurl'\n          source: 'deb [signed-by=$KEY_FILE] http://<url>/ bionic main'\n      source2:\n          source: 'ppa:<ppa-name>'\n      source3:\n          source: 'deb $MIRROR $RELEASE multiverse'\n          key: |\n              ------BEGIN PGP PUBLIC KEY BLOCK-------\n              <key data>\n              ------END PGP PUBLIC KEY BLOCK-------\n      source4:\n          source: 'deb $MIRROR $RELEASE multiverse'\n          append: false\n          key: |\n              ------BEGIN PGP PUBLIC KEY BLOCK-------\n              <key data>\n              ------END PGP PUBLIC KEY BLOCK-------"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_chef",
+    "in": {
+      "format": "yaml",
+      "payload": "\nchef:\n  directories:\n    - /etc/chef\n    - /var/log/chef\n  validation_cert: system\n  install_type: omnibus\n  initial_attributes:\n    apache:\n      prefork:\n        maxclients: 100\n      keepalive: off\n  run_list:\n    - recipe[apache2]\n    - role[db]\n  encrypted_data_bag_secret: /etc/chef/encrypted_data_bag_secret\n  environment: _default\n  log_level: :auto\n  omnibus_url_retries: 2\n  server_url: https://chef.yourorg.com:4000\n  ssl_verify_mode: :verify_peer\n  validation_name: yourorg-validator"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_drivers",
+    "in": {
+      "format": "yaml",
+      "payload": "drivers:\n  nvidia:\n    license-accepted: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_locale",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set the locale to ar_AE\nlocale: ar_AE\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_locale",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set the locale to fr_CA in /etc/alternate_path/locale\nlocale: fr_CA\nlocale_configfile: /etc/alternate_path/locale\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ansible",
+    "in": {
+      "format": "yaml",
+      "payload": "ansible:\n  install_method: distro\n  pull:\n    url: \"https://github.com/holmanb/vmboot.git\"\n    playbook_name: ubuntu.yml\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ansible",
+    "in": {
+      "format": "yaml",
+      "payload": "ansible:\n  package_name: ansible-core\n  install_method: pip\n  pull:\n    url: \"https://github.com/holmanb/vmboot.git\"\n    playbook_name: ubuntu.yml\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_scripts_vendor",
+    "in": {
+      "format": "yaml",
+      "payload": "vendor_data:\n  enabled: true\n  prefix: /usr/bin/ltrace\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_scripts_vendor",
+    "in": {
+      "format": "yaml",
+      "payload": "vendor_data:\n  enabled: true\n  prefix: [timeout, 30]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_scripts_vendor",
+    "in": {
+      "format": "yaml",
+      "payload": "# Vendor data will not be processed\nvendor_data:\n  enabled: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_set_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "preserve_hostname: true"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_set_hostname",
+    "in": {
+      "format": "yaml",
+      "payload": "hostname: myhost\nfqdn: myhost.example.com\nprefer_fqdn_over_hostname: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_migrator",
+    "in": {
+      "format": "yaml",
+      "payload": "# Do not migrate cloud-init semaphores\nmigrate: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_keys_to_console",
+    "in": {
+      "format": "yaml",
+      "payload": "# Do not print any SSH keys to system console\nssh:\n  emit_keys_to_console: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_keys_to_console",
+    "in": {
+      "format": "yaml",
+      "payload": "# Do not print certain ssh key types to console\nssh_key_console_blacklist: [dsa, ssh-dss]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_keys_to_console",
+    "in": {
+      "format": "yaml",
+      "payload": "# Do not print specific ssh key fingerprints to console\nssh_fp_console_blacklist:\n- E25451E0221B5773DEBFF178ECDACB160995AA89\n- FE76292D55E8B28EE6DB2B34B2D8A784F8C0AAB0\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_lxd",
+    "in": {
+      "format": "yaml",
+      "payload": "# Simplest working directory backed LXD configuration\nlxd:\n  init:\n    storage_backend: dir\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_lxd",
+    "in": {
+      "format": "yaml",
+      "payload": "# LXD init showcasing cloud-init's LXD config options\nlxd:\n  init:\n    network_address: 0.0.0.0\n    network_port: 8443\n    storage_backend: zfs\n    storage_pool: datapool\n    storage_create_loop: 10\n  bridge:\n    mode: new\n    mtu: 1500\n    name: lxdbr0\n    ipv4_address: 10.0.8.1\n    ipv4_netmask: 24\n    ipv4_dhcp_first: 10.0.8.2\n    ipv4_dhcp_last: 10.0.8.3\n    ipv4_dhcp_leases: 250\n    ipv4_nat: true\n    ipv6_address: fd98:9e0:3744::1\n    ipv6_netmask: 64\n    ipv6_nat: true\n    domain: lxd\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_lxd",
+    "in": {
+      "format": "yaml",
+      "payload": "# For more complex non-iteractive LXD configuration of networks,\n# storage_pools, profiles, projects, clusters and core config,\n# `lxd:preseed` config will be passed as stdin to the command:\n#  lxd init --preseed\n# See https://linuxcontainers.org/lxd/docs/master/preseed/ or\n# run: lxd init --dump to see viable preseed YAML allowed.\n#\n# Preseed settings configuring the LXD daemon for HTTPS connections\n# on 192.168.1.1 port 9999, a nested profile which allows for\n# LXD nesting on containers and a limited project allowing for\n# RBAC approach when defining behavior for sub projects.\nlxd:\n  preseed: |\n    config:\n      core.https_address: 192.168.1.1:9999\n    networks:\n      - config:\n          ipv4.address: 10.42.42.1/24\n          ipv4.nat: true\n          ipv6.address: fd42:4242:4242:4242::1/64\n          ipv6.nat: true\n        description: \"\"\n        name: lxdbr0\n        type: bridge\n        project: default\n    storage_pools:\n      - config:\n          size: 5GiB\n          source: /var/snap/lxd/common/lxd/disks/default.img\n        description: \"\"\n        name: default\n        driver: zfs\n    profiles:\n      - config: {}\n        description: Default LXD profile\n        devices:\n          eth0:\n            name: eth0\n            network: lxdbr0\n            type: nic\n          root:\n            path: /\n            pool: default\n            type: disk\n        name: default\n      - config: {}\n        security.nesting: true\n        devices:\n          eth0:\n            name: eth0\n            network: lxdbr0\n            type: nic\n          root:\n            path: /\n            pool: default\n            type: disk\n        name: nested\n    projects:\n      - config:\n          features.images: true\n          features.networks: true\n          features.profiles: true\n          features.storage.volumes: true\n        description: Default LXD project\n        name: default\n      - config:\n          features.images: false\n          features.networks: true\n          features.profiles: false\n          features.storage.volumes: false\n        description: Limited Access LXD project\n        name: limited\n\n\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# Add the ``default_user`` from /etc/cloud/cloud.cfg.\n# This is also the default behavior of cloud-init when no `users` key\n# is provided.\nusers:\n- default\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# Add the 'admingroup' with members 'root' and 'sys' and an empty\n# group cloud-users.\ngroups:\n- admingroup: [root,sys]\n- cloud-users\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# Skip creation of the <default> user and only create newsuper.\n# Password-based login is rejected, but the github user TheRealFalcon\n# and the launchpad user falcojr can SSH as newsuper. The default\n# shell for newsuper is bash instead of system default.\nusers:\n- name: newsuper\n  gecos: Big Stuff\n  groups: users, admin\n  sudo: ALL=(ALL) NOPASSWD:ALL\n  shell: /bin/bash\n  lock_passwd: true\n  ssh_import_id:\n    - lp:falcojr\n    - gh:TheRealFalcon\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# On a system with SELinux enabled, add youruser and set the\n# SELinux user to 'staff_u'. When omitted on SELinux, the system will\n# select the configured default SELinux user.\nusers:\n- default\n- name: youruser\n  selinux_user: staff_u\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# To redirect a legacy username to the <default> user for a\n# distribution, ssh_redirect_user will accept an SSH connection and\n# emit a message telling the client to ssh as the <default> user.\n# SSH clients will get the message:\nusers:\n- default\n- name: nosshlogins\n  ssh_redirect_user: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_users_groups",
+    "in": {
+      "format": "yaml",
+      "payload": "# Override any ``default_user`` config in /etc/cloud/cloud.cfg with\n# supplemental config options.\n# This config will make the default user to mynewdefault and change\n# the user to not have sudo rights.\nssh_import_id: [chad.smith]\nuser:\n  name: mynewdefault\n  sudo: null\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_disable_ec2_metadata",
+    "in": {
+      "format": "yaml",
+      "payload": "disable_ec2_metadata: true"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_byobu",
+    "in": {
+      "format": "yaml",
+      "payload": "byobu_by_default: enable-user"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_byobu",
+    "in": {
+      "format": "yaml",
+      "payload": "byobu_by_default: disable-system"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_package_update_upgrade_install",
+    "in": {
+      "format": "yaml",
+      "payload": "packages:\n  - pwgen\n  - pastebinit\n  - [libpython3.8, 3.8.10-0ubuntu1~20.04.2]\npackage_update: true\npackage_upgrade: true\npackage_reboot_if_required: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_seed_random",
+    "in": {
+      "format": "yaml",
+      "payload": "random_seed:\n  file: /dev/urandom\n  data: my random string\n  encoding: raw\n  command: ['sh', '-c', 'dd if=/dev/urandom of=$RANDOM_SEED_FILE']\n  command_required: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_seed_random",
+    "in": {
+      "format": "yaml",
+      "payload": "# To use 'pollinate' to gather data from a remote entropy\n# server and write it to '/dev/urandom', the following\n# could be used:\nrandom_seed:\n  file: /dev/urandom\n  command: [\"pollinate\", \"--server=http://local.polinate.server\"]\n  command_required: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_mounts",
+    "in": {
+      "format": "yaml",
+      "payload": "# Mount ephemeral0 with \"noexec\" flag, /dev/sdc with mount_default_fields,\n# and /dev/xvdh with custom fs_passno \"0\" to avoid fsck on the mount.\n# Also provide an automatically sized swap with a max size of 10485760\n# bytes.\nmounts:\n    - [ /dev/ephemeral0, /mnt, auto, \"defaults,noexec\" ]\n    - [ sdc, /opt/data ]\n    - [ xvdh, /opt/data, auto, \"defaults,nofail\", \"0\", \"0\" ]\nmount_default_fields: [None, None, auto, \"defaults,nofail\", \"0\", \"2\"]\nswap:\n    filename: /my/swapfile\n    size: auto\n    maxsize: 10485760\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_mounts",
+    "in": {
+      "format": "yaml",
+      "payload": "# Create a 2 GB swap file at /swapfile using human-readable values\nswap:\n    filename: /swapfile\n    size: 2G\n    maxsize: 2G\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_fan",
+    "in": {
+      "format": "yaml",
+      "payload": "fan:\n  config: |\n    # fan 240\n    10.0.0.0/8 eth0/16 dhcp\n    10.0.0.0/8 eth1/16 dhcp off\n    # fan 241\n    241.0.0.0/8 eth0/16 dhcp\n  config_path: /etc/network/fan\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_puppet",
+    "in": {
+      "format": "yaml",
+      "payload": "puppet:\n    install: true\n    version: \"7.7.0\"\n    install_type: \"aio\"\n    collection: \"puppet7\"\n    aio_install_url: 'https://git.io/JBhoQ'\n    cleanup: true\n    conf_file: \"/etc/puppet/puppet.conf\"\n    ssl_dir: \"/var/lib/puppet/ssl\"\n    csr_attributes_path: \"/etc/puppet/csr_attributes.yaml\"\n    exec: true\n    exec_args: ['--test']\n    conf:\n        agent:\n            server: \"puppetserver.example.org\"\n            certname: \"%i.%f\"\n        ca_cert: |\n            -----BEGIN CERTIFICATE-----\n            MIICCTCCAXKgAwIBAgIBATANBgkqhkiG9w0BAQUFADANMQswCQYDVQQDDAJjYTAe\n            Fw0xMDAyMTUxNzI5MjFaFw0xNTAyMTQxNzI5MjFaMA0xCzAJBgNVBAMMAmNhMIGf\n            MA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu7Q40sm47/E1Pf+r8AYb/V/FWGPgc\n            b014OmNoX7dgCxTDvps/h8Vw555PdAFsW5+QhsGr31IJNI3kSYprFQcYf7A8tNWu\n            1MASW2CfaEiOEi9F1R3R4Qlz4ix+iNoHiUDTjazw/tZwEdxaQXQVLwgTGRwVa+aA\n            qbutJKi93MILLwIDAQABo3kwdzA4BglghkgBhvhCAQ0EKxYpUHVwcGV0IFJ1Ynkv\n            T3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwDwYDVR0TAQH/BAUwAwEB/zAd\n            BgNVHQ4EFgQUu4+jHB+GYE5Vxo+ol1OAhevspjAwCwYDVR0PBAQDAgEGMA0GCSqG\n            SIb3DQEBBQUAA4GBAH/rxlUIjwNb3n7TXJcDJ6MMHUlwjr03BDJXKb34Ulndkpaf\n            +GAlzPXWa7bO908M9I8RnPfvtKnteLbvgTK+h+zX1XCty+S2EQWk29i2AdoqOTxb\n            hppiGMp0tT5Havu4aceCXiy2crVcudj3NFciy8X66SoECemW9UYDCb9T5D0d\n            -----END CERTIFICATE-----\n    csr_attributes:\n        custom_attributes:\n            1.2.840.113549.1.9.7: 342thbjkt82094y0uthhor289jnqthpc2290\n        extension_requests:\n            pp_uuid: ED803750-E3C7-44F5-BB08-41A04433FE2E\n            pp_image_name: my_ami_image\n            pp_preshared_key: 342thbjkt82094y0uthhor289jnqthpc2290\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_puppet",
+    "in": {
+      "format": "yaml",
+      "payload": "puppet:\n    install_type: \"packages\"\n    package_name: \"puppet\"\n    exec: false\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_snap",
+    "in": {
+      "format": "yaml",
+      "payload": "snap:\n    assertions:\n      00: |\n        signed_assertion_blob_here\n      02: |\n        signed_assertion_blob_here\n    commands:\n      00: snap create-user --sudoer --known <snap-user>@mydomain.com\n      01: snap install canonical-livepatch\n      02: canonical-livepatch enable <AUTH_TOKEN>\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_snap",
+    "in": {
+      "format": "yaml",
+      "payload": "# Convenience: the snap command can be omitted when specifying commands\n# as a list and 'snap' will automatically be prepended.\n# The following commands are equivalent:\nsnap:\n  commands:\n    00: ['install', 'vlc']\n    01: ['snap', 'install', 'vlc']\n    02: snap install vlc\n    03: 'snap install vlc'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_snap",
+    "in": {
+      "format": "yaml",
+      "payload": "# You can use a list of commands\nsnap:\n  commands:\n    - ['install', 'vlc']\n    - ['snap', 'install', 'vlc']\n    - snap install vlc\n    - 'snap install vlc'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_snap",
+    "in": {
+      "format": "yaml",
+      "payload": "# You can use a list of assertions\nsnap:\n  assertions:\n    - signed_assertion_blob_here\n    - |\n      signed_assertion_blob_here\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_wireguard",
+    "in": {
+      "format": "yaml",
+      "payload": "# Configure one or more WG interfaces and provide optional readinessprobes\nwireguard:\n  interfaces:\n    - name: wg0\n      config_path: /etc/wireguard/wg0.conf\n      content: |\n        [Interface]\n        PrivateKey = <private_key>\n        Address = <address>\n        [Peer]\n        PublicKey = <public_key>\n        Endpoint = <endpoint_ip>:<endpoint_ip_port>\n        AllowedIPs = <allowedip1>, <allowedip2>, ...\n    - name: wg1\n      config_path: /etc/wireguard/wg1.conf\n      content: |\n        [Interface]\n        PrivateKey = <private_key>\n        Address = <address>\n        [Peer]\n        PublicKey = <public_key>\n        Endpoint = <endpoint_ip>:<endpoint_ip_port>\n        AllowedIPs = <allowedip1>\n  readinessprobe:\n    - 'systemctl restart service'\n    - 'curl https://webhook.endpoint/example'\n    - 'nc -zv some-service-fqdn 443'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_mcollective",
+    "in": {
+      "format": "yaml",
+      "payload": "# Provide server private and public key and provide the following\n# config settings in /etc/mcollective/server.cfg:\n# loglevel: debug\n# plugin.stomp.host: dbhost\n\n# WARNING WARNING WARNING\n# The ec2 metadata service is a network service, and thus is\n# readable by non-root users on the system\n# (ie: 'ec2metadata --user-data')\n# If you want security for this, please use include-once + SSL urls\nmcollective:\n  conf:\n    loglevel: debug\n    plugin.stomp.host: dbhost\n    public-cert: |\n        -------BEGIN CERTIFICATE--------\n        <cert data>\n        -------END CERTIFICATE--------\n    private-cert: |\n        -------BEGIN CERTIFICATE--------\n        <cert data>\n        -------END CERTIFICATE--------\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_disk_setup",
+    "in": {
+      "format": "yaml",
+      "payload": "device_aliases:\n  my_alias: /dev/sdb\n  swap_disk: /dev/sdc\ndisk_setup:\n  my_alias:\n    table_type: gpt\n    layout: [50, 50]\n    overwrite: true\n  swap_disk:\n    table_type: gpt\n    layout: [[100, 82]]\n    overwrite: true\nfs_setup:\n- label: fs1\n  filesystem: ext4\n  device: my_alias.1\n  cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s\n- label: fs2\n  device: my_alias.2\n  filesystem: ext4\n- label: swap\n  device: swap_disk.1\n  filesystem: swap\nmounts:\n- [\"my_alias.1\", \"/mnt1\"]\n- [\"my_alias.2\", \"/mnt2\"]\n- [\"swap_disk.1\", \"none\", \"swap\", \"sw\", \"0\", \"0\"]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_power_state_change",
+    "in": {
+      "format": "yaml",
+      "payload": "power_state:\n    delay: now\n    mode: poweroff\n    message: Powering off\n    timeout: 2\n    condition: true\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_power_state_change",
+    "in": {
+      "format": "yaml",
+      "payload": "power_state:\n    delay: 30\n    mode: reboot\n    message: Rebooting machine\n    condition: test -f /var/tmp/reboot_me\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ntp",
+    "in": {
+      "format": "yaml",
+      "payload": "# Override ntp with chrony configuration on Ubuntu\nntp:\n  enabled: true\n  ntp_client: chrony  # Uses cloud-init default chrony configuration\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ntp",
+    "in": {
+      "format": "yaml",
+      "payload": "# Provide a custom ntp client configuration\nntp:\n  enabled: true\n  ntp_client: myntpclient\n  config:\n     confpath: /etc/myntpclient/myntpclient.conf\n     check_exe: myntpclientd\n     packages:\n       - myntpclient\n     service_name: myntpclient\n     template: |\n         ## template:jinja\n         # My NTP Client config\n         {% if pools -%}# pools{% endif %}\n         {% for pool in pools -%}\n         pool {{pool}} iburst\n         {% endfor %}\n         {%- if servers %}# servers\n         {% endif %}\n         {% for server in servers -%}\n         server {{server}} iburst\n         {% endfor %}\n  pools: [0.int.pool.ntp.org, 1.int.pool.ntp.org, ntp.myorg.org]\n  servers:\n    - ntp.server.local\n    - ntp.ubuntu.com\n    - 192.168.23.2"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_phone_home",
+    "in": {
+      "format": "yaml",
+      "payload": "phone_home:\n    url: http://example.com/$INSTANCE_ID/\n    post: all\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_phone_home",
+    "in": {
+      "format": "yaml",
+      "payload": "phone_home:\n    url: http://example.com/$INSTANCE_ID/\n    post:\n        - pub_key_dsa\n        - pub_key_rsa\n        - pub_key_ecdsa\n        - pub_key_ed25519\n        - instance_id\n        - hostname\n        - fqdn\n    tries: 5\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_rh_subscription",
+    "in": {
+      "format": "yaml",
+      "payload": "rh_subscription:\n    username: joe@foo.bar\n    ## Quote your password if it has symbols to be safe\n    password: '1234abcd'\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_rh_subscription",
+    "in": {
+      "format": "yaml",
+      "payload": "rh_subscription:\n    activation-key: foobar\n    org: 12345\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_rh_subscription",
+    "in": {
+      "format": "yaml",
+      "payload": "rh_subscription:\n    activation-key: foobar\n    org: 12345\n    auto-attach: true\n    service-level: self-support\n    add-pool:\n      - 1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a\n      - 2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b\n    enable-repo:\n      - repo-id-to-enable\n      - other-repo-id-to-enable\n    disable-repo:\n      - repo-id-to-disable\n      - other-repo-id-to-disable\n    # Alter the baseurl in /etc/rhsm/rhsm.conf\n    rhsm-baseurl: http://url\n    # Alter the server hostname in /etc/rhsm/rhsm.conf\n    server-hostname: foo.bar.com\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Attach the machine to an Ubuntu Advantage support contract with a\n# UA contract token obtained from https://ubuntu.com/advantage.\nubuntu_advantage:\n  token: <ua_contract_token>\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Attach the machine to an Ubuntu Advantage support contract enabling\n# only fips and esm services. Services will only be enabled if\n# the environment supports said service. Otherwise warnings will\n# be logged for incompatible services specified.\nubuntu_advantage:\n  token: <ua_contract_token>\n  enable:\n  - fips\n  - esm\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Attach the machine to an Ubuntu Advantage support contract and enable\n# the FIPS service.  Perform a reboot once cloud-init has\n# completed.\npower_state:\n  mode: reboot\nubuntu_advantage:\n  token: <ua_contract_token>\n  enable:\n  - fips\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Set a http(s) proxy before attaching the machine to an\n# Ubuntu Advantage support contract and enabling the FIPS service.\nubuntu_advantage:\n  token: <ua_contract_token>\n  config:\n    http_proxy: 'http://some-proxy:8088'\n    https_proxy: 'https://some-proxy:8088'\n    global_apt_https_proxy: 'https://some-global-apt-proxy:8088/'\n    global_apt_http_proxy: 'http://some-global-apt-proxy:8088/'\n    ua_apt_http_proxy: 'http://10.0.10.10:3128'\n    ua_apt_https_proxy: 'https://10.0.10.10:3128'\n  enable:\n  - fips\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# On Ubuntu PRO instances, auto-attach but enable no PRO services.\nubuntu_advantage:\n  enable: []\n  enable_beta: []\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Enable esm and beta realtime-kernel services in Ubuntu Pro instances.\nubuntu_advantage:\n  enable:\n  - esm\n  enable_beta:\n  - realtime-kernel\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ubuntu_advantage",
+    "in": {
+      "format": "yaml",
+      "payload": "# Disable auto-attach in Ubuntu Pro instances.\nubuntu_advantage:\n  features:\n    disable_auto_attach: True\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_pipelining",
+    "in": {
+      "format": "yaml",
+      "payload": "apt_pipelining: false"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_pipelining",
+    "in": {
+      "format": "yaml",
+      "payload": "apt_pipelining: none"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_pipelining",
+    "in": {
+      "format": "yaml",
+      "payload": "apt_pipelining: unchanged"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_pipelining",
+    "in": {
+      "format": "yaml",
+      "payload": "apt_pipelining: os"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_apt_pipelining",
+    "in": {
+      "format": "yaml",
+      "payload": "apt_pipelining: 3"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_install_hotplug",
+    "in": {
+      "format": "yaml",
+      "payload": "# Enable hotplug of network devices\nupdates:\n  network:\n    when: [\"hotplug\"]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_install_hotplug",
+    "in": {
+      "format": "yaml",
+      "payload": "# Enable network hotplug alongside boot event\nupdates:\n  network:\n    when: [\"boot\", \"hotplug\"]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_resizefs",
+    "in": {
+      "format": "yaml",
+      "payload": "resize_rootfs: false  # disable root filesystem resize operation"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_resizefs",
+    "in": {
+      "format": "yaml",
+      "payload": "resize_rootfs: noblock  # runs resize operation in the background"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_spacewalk",
+    "in": {
+      "format": "yaml",
+      "payload": "spacewalk:\n  server: <url>\n  proxy: <proxy host>\n  activation_key: <key>\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ssh_authkey_fingerprints",
+    "in": {
+      "format": "yaml",
+      "payload": "no_ssh_fingerprints: true"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_ssh_authkey_fingerprints",
+    "in": {
+      "format": "yaml",
+      "payload": "authkey_hash: sha512"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_rsyslog",
+    "in": {
+      "format": "yaml",
+      "payload": "rsyslog:\n    remotes:\n        maas: 192.168.1.1\n        juju: 10.0.4.1\n    service_reload_command: auto\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  },
+  {
+    "name": "cc_rsyslog",
+    "in": {
+      "format": "yaml",
+      "payload": "rsyslog:\n    config_dir: /opt/etc/rsyslog.d\n    config_filename: 99-late-cloud-config.conf\n    configs:\n        - \"*.* @@192.158.1.1\"\n        - content: \"*.*   @@192.0.2.1:10514\"\n          filename: 01-example.conf\n        - content: |\n            *.*   @@syslogd.example.com\n    remotes:\n        maas: 192.168.1.1\n        juju: 10.0.4.1\n    service_reload_command: [your, syslog, restart, command]\n"
+    },
+    "out": {
+      "status_code": 200,
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": "Valid"
+      }
+    }
+  }
+]
