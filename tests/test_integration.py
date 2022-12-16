@@ -29,7 +29,7 @@ def test_x(client):
         }
     )
     assert resp.status_code == 200, resp.content
-    assert resp.json() == {"annotations": [], "errors": [], "is_valid": "Valid"}
+    assert resp.json() == {"annotations": [], "errors": [], "is_valid": True}
 
 
 def get_test_cases(file: Path):

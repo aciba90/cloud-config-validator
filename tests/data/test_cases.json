@@ -7,7 +7,7 @@
       },
       "out": {
         "status_code": 200,
-        "json": {"annotations": [], "errors": [], "is_valid": "Valid"}
+        "json": {"annotations": [], "errors": [], "is_valid": true}
       }
     },
     {
@@ -18,7 +18,7 @@
       },
       "out": {
         "status_code": 200,
-        "json": {"annotations": [], "errors": [], "is_valid": "Valid"}
+        "json": {"annotations": [], "errors": [], "is_valid": true}
       }
     }
   ]
