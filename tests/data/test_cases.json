@@ -1,8 +1,20 @@
   [
     {
+      "name": "out-of-schema",
       "in": {
         "format": "yaml",
         "payload": "asdfaf: 1"
+      },
+      "out": {
+        "status_code": 200,
+        "json": {"annotations": [], "errors": [], "is_valid": "Valid"}
+      }
+    },
+    {
+      "name": "out-of-schema-header",
+      "in": {
+        "format": "yaml",
+        "payload": "#cloud-config\nasdfaf: 1"
       },
       "out": {
         "status_code": 200,

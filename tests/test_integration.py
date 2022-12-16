@@ -46,3 +46,12 @@ class TestValidation:
         )
         assert resp.status_code == status_code, resp
         assert resp.json() == expected_json, resp
+
+    @pytest.mark.parametrize("input, status_code, expected_json", get_test_cases(DATA_PATH / "cloud_init_examples.json"))
+    def test_cloud_init_examples(self, client, input, status_code, expected_json):
+        resp = client.post(
+            "/v1/cloud-config/validate",
+            json=input,
+        )
+        assert resp.status_code == status_code, resp.content
+        assert resp.json() == expected_json, resp.content
