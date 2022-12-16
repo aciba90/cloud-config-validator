@@ -28,13 +28,6 @@ pub enum Format {
     Json,
 }
 
-// TODO: serialize as boolean
-#[derive(Debug, PartialEq, Clone, Serialize)]
-enum ValResult {
-    Valid,
-    Invalid,
-}
-
 #[derive(Debug, PartialEq, Clone, Serialize)]
 struct ConfigAnnotation {
     description: String,
@@ -49,7 +42,7 @@ struct ConfigError {
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Validation {
-    is_valid: ValResult,
+    is_valid: bool,
     annotations: Vec<ConfigAnnotation>,
     errors: Vec<ConfigError>,
 }
@@ -91,7 +84,7 @@ impl From<BasicOutput<'_>> for Validation {
                     }
                 }
                 Self {
-                    is_valid: ValResult::Valid,
+                    is_valid: true,
                     annotations,
                     errors: vec![],
                 }
@@ -102,7 +95,7 @@ impl From<BasicOutput<'_>> for Validation {
                     errors.push(error.into());
                 }
                 Self {
-                    is_valid: ValResult::Invalid,
+                    is_valid: false,
                     annotations: vec![],
                     errors,
                 }
@@ -184,7 +177,7 @@ mod test_validate {
 
         let validation: Validation = out.into();
         let expected_validation = Validation {
-            is_valid: ValResult::Valid,
+            is_valid: true,
             annotations: vec![ConfigAnnotation {
                 description: "DEPRECATED".to_string(),
                 instance_path: "/x/y".to_string(),
@@ -226,7 +219,7 @@ mod test_validate {
 
         let validation: Validation = out.into();
         let expected_validation = Validation {
-            is_valid: ValResult::Invalid,
+            is_valid: false,
             annotations: vec![],
             errors: vec![ConfigError {
                 description: "1.5 is not of type \"integer\"".to_string(),
