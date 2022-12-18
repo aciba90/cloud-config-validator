@@ -7,25 +7,13 @@ const SCHEMA: &str = include_str!("../schemas/versions.schema.cloud-config.resol
 
 #[derive(Debug, Deserialize)]
 pub struct CloudConfig {
-    format: Format,
     payload: String,
 }
 
 impl CloudConfig {
-    pub fn format(&self) -> &Format {
-        &self.format
-    }
-
     pub fn payload(&self) -> &str {
         &self.payload
     }
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum Format {
-    Yaml,
-    Json,
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
