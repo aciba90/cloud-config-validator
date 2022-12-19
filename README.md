@@ -2,7 +2,7 @@
 
 ## TODO
 
-- Error handling.
+- Error handling. ApiError: encode format with type.
 
 - OpenAPI doc generation.
 

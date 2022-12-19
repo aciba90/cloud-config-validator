@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 use jsonschema::output::{Annotations, BasicOutput, ErrorDescription, OutputUnit};
 use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
@@ -110,7 +110,7 @@ impl Validator {
 
     fn from_vendored_schema() -> Self {
         let schema = serde_json::from_str(SCHEMA).expect("valid json");
-        Validator::try_from(&schema).unwrap()
+        Validator::try_from(&schema).expect("valid schema")
     }
 
     pub fn validate(&self, inst: &Value) -> Validation {
@@ -133,9 +133,7 @@ impl Validator {
         let payload: Value = match serde_yaml::from_str(payload) {
             Ok(p) => p,
             Err(e) => {
-                dbg!(&e);
-                dbg!(&e.location());
-                return Err(Error::InvalidYaml(e));
+                return Err(e);
             }
         };
         let mut validation = self.validate(&payload);
@@ -255,15 +253,9 @@ mod test_validate {
     fn invalid_yaml() {
         let validator = Validator::new();
         let validation = validator.validate_yaml("@asdf");
-        match validation {
-            Ok(validation) => {
-                dbg!(validation);
-                panic!("asdfadfa");
-            }
-            Err(e) => {
-                dbg!(&e);
-                panic!("asdfa");
-            }
-        }
+        assert_eq!(
+            "found character that cannot start any token, while scanning for the next token",
+            validation.unwrap_err().to_string()
+        );
     }
 }
