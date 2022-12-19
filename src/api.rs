@@ -41,6 +41,6 @@ mod test {
             .send()
             .await;
         assert_eq!(res.status(), StatusCode::BAD_REQUEST);
-        assert_eq!(res.text().await, r#"{"Err":"InvalidYaml"}"#);
+        assert_eq!(res.text().await, "{\"errors\":[\"found unexpected end of stream at line 1 column 3, while scanning a quoted scalar\"]}");
     }
 }
