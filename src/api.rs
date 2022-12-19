@@ -13,7 +13,7 @@ pub fn create_api() -> Router {
 }
 
 #[cfg(test)]
-mod test_api {
+mod test {
     use super::*;
     use axum_test_helper::TestClient;
     use hyper::StatusCode;
@@ -25,10 +25,22 @@ mod test_api {
     }
 
     #[tokio::test]
-    async fn test_root() {
+    async fn root() {
         let client = test_client();
         let res = client.get("/").send().await;
         assert_eq!(res.status(), StatusCode::OK);
         assert_eq!(res.text().await, "[\"/v1\"]");
+    }
+
+    #[tokio::test]
+    async fn invalid_yaml() {
+        let client = test_client();
+        let res = client
+            .post("/v1/cloud-config/validate")
+            .json(&json!({"payload": "\"a"}))
+            .send()
+            .await;
+        assert_eq!(res.status(), StatusCode::BAD_REQUEST);
+        assert_eq!(res.text().await, r#"{"Err":"InvalidYaml"}"#);
     }
 }

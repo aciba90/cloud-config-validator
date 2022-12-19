@@ -1,9 +1,13 @@
+use std::collections::VecDeque;
+
+use crate::error::{Error, Result};
 use jsonschema::output::{Annotations, BasicOutput, ErrorDescription, OutputUnit};
 use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 const SCHEMA: &str = include_str!("../schemas/versions.schema.cloud-config.resolved.1.json");
+const CLOUD_CONFIG_HEADER: &str = "#cloud-config";
 
 #[derive(Debug, Deserialize)]
 pub struct CloudConfig {
@@ -32,7 +36,7 @@ struct ConfigError {
 pub struct Validation {
     is_valid: bool,
     annotations: Vec<ConfigAnnotation>,
-    errors: Vec<ConfigError>,
+    errors: VecDeque<ConfigError>,
 }
 
 impl From<&OutputUnit<Annotations<'_>>> for ConfigAnnotation {
@@ -74,13 +78,13 @@ impl From<BasicOutput<'_>> for Validation {
                 Self {
                     is_valid: true,
                     annotations,
-                    errors: vec![],
+                    errors: VecDeque::new(),
                 }
             }
             BasicOutput::Invalid(out_errors) => {
-                let mut errors = Vec::with_capacity(out_errors.len());
+                let mut errors = VecDeque::with_capacity(out_errors.len());
                 for error in out_errors {
-                    errors.push(error.into());
+                    errors.push_back(error.into());
                 }
                 Self {
                     is_valid: false,
@@ -111,6 +115,35 @@ impl Validator {
 
     pub fn validate(&self, inst: &Value) -> Validation {
         self.json_schema.apply(inst).basic().into()
+    }
+
+    pub fn validate_yaml(&self, payload: &str) -> Result<Validation> {
+        let format_error = if !payload.starts_with(CLOUD_CONFIG_HEADER) {
+            Some(ConfigError {
+                description: format!(
+                    "Cloud-config needs to begin with \"{}\"",
+                    CLOUD_CONFIG_HEADER
+                ),
+                instance_path: String::new(), // XXX None
+            })
+        } else {
+            None
+        };
+
+        let payload: Value = match serde_yaml::from_str(payload) {
+            Ok(p) => p,
+            Err(e) => {
+                dbg!(&e);
+                dbg!(&e.location());
+                return Err(Error::InvalidYaml(e));
+            }
+        };
+        let mut validation = self.validate(&payload);
+
+        if let Some(format_error) = format_error {
+            validation.errors.push_front(format_error);
+        }
+        Ok(validation)
     }
 }
 
@@ -170,7 +203,7 @@ mod test_validate {
                 description: "DEPRECATED".to_string(),
                 instance_path: "/x/y".to_string(),
             }],
-            errors: vec![],
+            errors: VecDeque::new(),
         };
         dbg!(&validation);
         assert_eq!(expected_validation, validation);
@@ -209,12 +242,28 @@ mod test_validate {
         let expected_validation = Validation {
             is_valid: false,
             annotations: vec![],
-            errors: vec![ConfigError {
+            errors: VecDeque::from(vec![ConfigError {
                 description: "1.5 is not of type \"integer\"".to_string(),
                 instance_path: "/x/y".to_string(),
-            }],
+            }]),
         };
         dbg!(&validation);
         assert_eq!(expected_validation, validation);
+    }
+
+    #[test]
+    fn invalid_yaml() {
+        let validator = Validator::new();
+        let validation = validator.validate_yaml("@asdf");
+        match validation {
+            Ok(validation) => {
+                dbg!(validation);
+                panic!("asdfadfa");
+            }
+            Err(e) => {
+                dbg!(&e);
+                panic!("asdfa");
+            }
+        }
     }
 }
