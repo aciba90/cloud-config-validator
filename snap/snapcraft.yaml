@@ -1,0 +1,32 @@
+name: cloud-config-validator
+base: core22
+version: '0.1.0+git'
+summary: TODO
+description: |
+  TODO
+
+grade: devel
+confinement: strict
+
+apps:
+  daemon:
+    command: bin/local
+    daemon: simple
+    plugs:
+      - network-bind
+    sockets:
+      unix:
+        listen-stream: $SNAP_COMMON/unix.socket
+        socket-mode: 0660
+    environment:
+      CLOUD_CONFIG_VALIDATOR_DIR: $SNAP_COMMON
+    install-mode: enable
+    refresh-mode: restart
+
+parts:
+  cloud-config-validator-test:
+    plugin: rust
+    source: .
+    build-packages:
+      - cargo
+      - rustc

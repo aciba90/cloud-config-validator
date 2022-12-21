@@ -1,5 +1,8 @@
+use cloud_config_validator::{
+    error::Result,
+    validator::{Validation, Validator},
+};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use cloud_config_validator::{validator::{Validator, Validation}, error::Result};
 use serde_json::json;
 
 fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
@@ -11,9 +14,11 @@ fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
 // TODO: create alarm ?
 pub fn criterion_benchmark(c: &mut Criterion) {
     let validator = Validator::new();
-    
+
     let input = "\"a";
-    c.bench_function("invalid yaml", |b| b.iter(|| raw_validate(&validator, black_box(&input))));
+    c.bench_function("invalid yaml", |b| {
+        b.iter(|| raw_validate(&validator, black_box(&input)))
+    });
 
     let input = r#"#cloud-config
 #
@@ -157,7 +162,9 @@ write_files:
       T1BFTlNTSCBQUklWQVRFIEtFWS0tLS0tCg==
 "#;
 
-    c.bench_function("valid yaml", |b| b.iter(|| raw_validate(&validator, black_box(&input))));
+    c.bench_function("valid yaml", |b| {
+        b.iter(|| raw_validate(&validator, black_box(&input)))
+    });
 }
 
 criterion_group!(benches, criterion_benchmark);
