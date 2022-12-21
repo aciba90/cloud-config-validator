@@ -10,7 +10,7 @@
 // TODO:
 // - make it programmable
 // - /run ?
-const SOCK: &str = "/tmp/cloud-config-validator/sock";
+const SOCK: &str = "unix.socket";
 
 #[cfg(unix)]
 #[tokio::main]
@@ -35,7 +35,7 @@ mod unix {
         server::accept::Accept,
     };
     use std::{
-        io,
+        env, io,
         path::PathBuf,
         pin::Pin,
         sync::Arc,
@@ -48,7 +48,10 @@ mod unix {
     use tower::BoxError;
 
     pub async fn server() {
-        let path = PathBuf::from(SOCK);
+        let cloud_config_validator_dir = env::var_os("CLOUD_CONFIG_VALIDATOR_DIR")
+            .expect("CLOUD_CONFIG_VALIDATOR_DIR must be defined");
+        let mut path = PathBuf::from(cloud_config_validator_dir);
+        path.push(SOCK);
 
         let _ = tokio::fs::remove_file(&path).await;
         tokio::fs::create_dir_all(path.parent().unwrap())
