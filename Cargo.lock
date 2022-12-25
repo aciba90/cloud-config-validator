@@ -300,6 +300,7 @@ dependencies = [
  "futures",
  "hyper",
  "jsonschema",
+ "rayon",
  "reqwest",
  "serde",
  "serde_json",
