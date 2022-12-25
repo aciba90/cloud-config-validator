@@ -35,15 +35,13 @@ $ sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v
   - https://docs.rs/aide/latest/aide/
   - https://github.com/tokio-rs/axum/issues/50
 
-- Mechanism to refresh the current validator if a new schema is published.
-An initial version could just mean to restart the application, but long term
-we need to be able to hot-update the schema without interupting the service.
-
 - Async jsonschema fetcher / resolver.
 jsonschema-rs' one uses a reqwest::blocking client which provokes
 runtime within runtime issues.
 
-- The validator should not block the async runtime.
+- Mechanism to refresh the current validator if a new schema is published.
+An initial version could just mean to restart the application, but long term
+we need to be able to hot-update the schema without interupting the service.
 
 - Return markers for annotations & errors: https://docs.rs/yaml-peg/latest/yaml_peg/
 
