@@ -1,6 +1,7 @@
 #[doc = include_str!("../README.md")]
 pub mod api;
-pub mod error;
-pub mod handlers;
-pub mod state;
-pub mod validator;
+pub mod error; // only public for benches
+mod handlers;
+mod schema;
+mod state;
+pub mod validator; // only public for benches
