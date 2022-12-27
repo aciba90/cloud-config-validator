@@ -3,7 +3,6 @@ use cloud_config_validator::{
     validator::{Validation, Validator},
 };
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use serde_json::json;
 
 fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
     validator.validate_yaml(&input)
