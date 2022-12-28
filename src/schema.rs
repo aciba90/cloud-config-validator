@@ -1,3 +1,4 @@
+// TODO: error handling
 use std::sync::Arc;
 
 use async_recursion::async_recursion;
@@ -51,7 +52,7 @@ impl Resolver {
     }
 
     async fn get(&self, url: &str) -> Option<Value> {
-        dbg!(&url);
+        // dbg!(&url);
         match url.parse::<Url>() {
             Ok(url) => self
                 .client
@@ -89,6 +90,7 @@ impl Resolver {
 
 #[async_recursion]
 async fn resolve(resolver: Arc<Mutex<Resolver>>, schema: serde_json::Value) -> serde_json::Value {
+    // TODO: clean up
     match schema {
         serde_json::Value::Object(mut obj) => {
             let mut new_obj = Map::with_capacity(obj.len());
@@ -126,10 +128,10 @@ async fn resolve(resolver: Arc<Mutex<Resolver>>, schema: serde_json::Value) -> s
                         .await
                         .expect("value not found");
                     new_obj.insert(key, resolve(resolver.clone(), val).await);
-                    dbg!(&new_obj);
+                    // dbg!(&new_obj);
                 } else {
                     new_obj.insert(key, resolve(resolver.clone(), val).await);
-                    dbg!(&new_obj);
+                    // dbg!(&new_obj);
                 }
             }
             serde_json::Value::Object(new_obj)

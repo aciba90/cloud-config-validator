@@ -1,1 +1,4 @@
-{"payload": "{\"ubuntu_advantage\": {\"features\": { \"disable_auto_attach\": 1}}}", "format": "json"}
+{
+  "format": "yaml",
+  "payload": "#cloud-config:\nubuntu_advantage:\n  features:\n    disable_auto_attach: 1"
+}
