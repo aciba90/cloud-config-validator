@@ -1,4 +1,4 @@
-use std::{borrow::BorrowMut, rc::Rc, sync::Arc, thread::panicking};
+use std::sync::Arc;
 
 use async_recursion::async_recursion;
 use futures::future::join_all;
@@ -21,8 +21,12 @@ impl Schema {
         Self(resolve(resolver, schema).await)
     }
 
-    pub fn from_schema_store() -> Self {
-        todo!();
+    #[allow(dead_code)]
+    pub fn from_vendored() -> Self {
+        static SCHEMA: &str =
+            include_str!("../schemas/versions.schema.cloud-config.resolved.1.json");
+        let schema = serde_json::from_str(SCHEMA).expect("valid json");
+        Self(schema)
     }
 
     pub fn schema(&self) -> &Value {
@@ -121,7 +125,6 @@ async fn resolve(resolver: Arc<Mutex<Resolver>>, schema: serde_json::Value) -> s
                         .get(val.as_str().unwrap())
                         .await
                         .expect("value not found");
-                    // val = resolve(resolver.clone(), val).await;
                     new_obj.insert(key, resolve(resolver.clone(), val).await);
                     dbg!(&new_obj);
                 } else {

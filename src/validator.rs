@@ -7,7 +7,6 @@ use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-const SCHEMA: &str = include_str!("../schemas/versions.schema.cloud-config.resolved.1.json");
 const CLOUD_CONFIG_HEADER: &str = "#cloud-config";
 
 #[derive(Debug, Deserialize)]
@@ -103,15 +102,15 @@ pub struct Validator {
 }
 
 impl Validator {
-    #[allow(clippy::new_without_default)]
     pub async fn new() -> Self {
         let schema = Schema::get().await;
         Validator::try_from(schema.schema()).expect("valid schema")
     }
 
+    #[allow(dead_code)]
     fn from_vendored_schema() -> Self {
-        let schema = serde_json::from_str(SCHEMA).expect("valid json");
-        Validator::try_from(&schema).expect("valid schema")
+        let schema = Schema::from_vendored();
+        Validator::try_from(schema.schema()).expect("valid schema")
     }
 
     pub fn validate(&self, inst: &Value) -> Validation {
@@ -141,6 +140,7 @@ impl Validator {
 
         if let Some(format_error) = format_error {
             validation.errors.push_front(format_error);
+            validation.is_valid = false;
         }
         Ok(validation)
     }
