@@ -4,12 +4,13 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::{extract::Json, response};
 use serde_json::{json, Value};
+use std::sync::RwLock;
 
 use crate::state::AppState;
 use crate::validator::CloudConfig;
 
 pub async fn validate(
-    State(state): State<Arc<AppState>>,
+    State(state): State<Arc<RwLock<AppState>>>,
     Json(payload): Json<CloudConfig>,
 ) -> (StatusCode, Json<Value>) {
     let mut status_code = StatusCode::OK;
@@ -31,7 +32,11 @@ pub async fn validate(
     // where N is the number of CPU cores.
     let (send, recv) = tokio::sync::oneshot::channel();
     rayon::spawn(move || {
-        let resp = state.validator.validate_yaml(payload.payload());
+        let resp = state
+            .read()
+            .expect("error unlocking state")
+            .validator
+            .validate_yaml(payload.payload());
         let _ = send.send(resp);
     });
     let resp = recv.await.expect("Panic in rayon::spawn");

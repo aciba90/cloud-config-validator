@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use crate::{handlers::validate, state::AppState, validator::Validator};
 use axum::{
@@ -7,11 +7,29 @@ use axum::{
     Router,
 };
 use serde_json::json;
+use std::sync::RwLock;
+use tokio::time;
 
 pub async fn create_api() -> Router {
     let validator = Validator::new().await;
     let app_state = AppState { validator };
-    let shared_state = Arc::new(app_state);
+    let shared_state = Arc::new(RwLock::new(app_state));
+
+    // TODO: make interval period configurable
+    // spawn job to refresh the schema periodically
+    tokio::spawn({
+        let mut interval = time::interval(Duration::from_secs(60 * 60)); // 1 hour
+        let shared_state = shared_state.clone();
+        async move {
+            loop {
+                interval.tick().await;
+                // TODO: log event
+                println!("refreshing cloud-config jsonschema");
+                let validator = Validator::new().await;
+                shared_state.write().unwrap().validator = validator;
+            }
+        }
+    });
 
     Router::new()
         .route("/", get(|| async { Json(json!(["/v1"])) }))
