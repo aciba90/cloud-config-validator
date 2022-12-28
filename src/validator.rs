@@ -1,15 +1,17 @@
+// instance_path: https://www.rfc-editor.org/rfc/rfc6901
 use std::collections::VecDeque;
 
 use crate::error::Result;
 use crate::schema::Schema;
 use jsonschema::output::{Annotations, BasicOutput, ErrorDescription, OutputUnit};
 use jsonschema::JSONSchema;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 const CLOUD_CONFIG_HEADER: &str = "#cloud-config";
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct CloudConfig {
     payload: String,
 }

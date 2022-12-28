@@ -27,8 +27,8 @@ fn main() {
 mod unix {
     use super::*;
 
-    use axum::extract::connect_info;
-    use cloud_config_validator::api::create_api;
+    use axum::{extract::connect_info, Extension};
+    use cloud_config_validator::api::{create_api, get_api_doc};
     use futures::ready;
     use hyper::{
         client::connect::{Connected, Connection},
@@ -60,10 +60,15 @@ mod unix {
 
         let uds = UnixListener::bind(path.clone()).unwrap();
 
-        let app = create_api().await;
+        let api = create_api().await;
+        let mut api_doc = get_api_doc();
 
         axum::Server::builder(ServerAccept { uds })
-            .serve(app.into_make_service_with_connect_info::<UdsConnectInfo>())
+            .serve(
+                api.finish_api(&mut api_doc)
+                    .layer(Extension(api_doc))
+                    .into_make_service_with_connect_info::<UdsConnectInfo>(),
+            )
             .await
             .unwrap();
     }

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use aide::axum::IntoApiResponse;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::{extract::Json, response};
@@ -12,9 +13,7 @@ use crate::validator::CloudConfig;
 pub async fn validate(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(payload): Json<CloudConfig>,
-) -> (StatusCode, Json<Value>) {
-    let mut status_code = StatusCode::OK;
-
+) -> impl IntoApiResponse {
     // Note: `validate_yaml` over an unbound yaml could block the async runtime, causing a delay
     // in reponse time.
     // More info: https://ryhl.io/blog/async-what-is-blocking/
@@ -45,14 +44,11 @@ pub async fn validate(
         Ok(resp) => {
             let resp =
                 serde_json::to_value(resp).expect("Validation response must be serializable");
-            (status_code, response::Json(resp))
+            (StatusCode::OK, response::Json(resp))
         }
-        Err(e) => {
-            status_code = StatusCode::BAD_REQUEST;
-            (
-                status_code,
-                response::Json(json!({"errors": [e.to_string()]})),
-            )
-        }
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            response::Json(json!({"errors": [e.to_string()]})),
+        ),
     }
 }

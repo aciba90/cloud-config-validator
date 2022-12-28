@@ -32,12 +32,14 @@ $ sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v
 
 - Error handling. ApiError: encode format with type.
 
+- logging / tracing.
+
 - OpenAPI doc generation.
 
   - https://docs.rs/aide/latest/aide/
   - https://github.com/tokio-rs/axum/issues/50
 
-- Return markers for annotations & errors: https://docs.rs/yaml-peg/latest/yaml_peg/
+- Extract yaml markers (locations) for annotations & errors: https://docs.rs/yaml-peg/latest/yaml_peg/
 
 - Port integration tests to rust.
 
