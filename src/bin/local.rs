@@ -60,7 +60,7 @@ mod unix {
 
         let uds = UnixListener::bind(path.clone()).unwrap();
 
-        let app = create_api();
+        let app = create_api().await;
 
         axum::Server::builder(ServerAccept { uds })
             .serve(app.into_make_service_with_connect_info::<UdsConnectInfo>())
