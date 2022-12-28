@@ -8,7 +8,7 @@ DATA_PATH = Path(__file__).parent / "data"
 
 @pytest.fixture(scope="session")
 def client() -> httpx.Client:
-    transport = httpx.HTTPTransport(uds="/tmp/cloud-config-validator/sock")
+    transport = httpx.HTTPTransport(uds="/tmp/cloud-config-validator/unix.socket")
     client = httpx.Client(base_url="http://cloud-config-validator", transport=transport)
 
     yield client
@@ -25,7 +25,7 @@ def test_x(client):
         "/v1/cloud-config/validate",
         json={
             "format": "yaml",
-            "payload": "asdfafd: 1"
+            "payload": "#cloud-config\nasdfafd: 1"
         }
     )
     assert resp.status_code == 200, resp.content
@@ -49,6 +49,7 @@ class TestValidation:
 
     @pytest.mark.parametrize("input, status_code, expected_json", get_test_cases(DATA_PATH / "cloud_init_examples.json"))
     def test_cloud_init_examples(self, client, input, status_code, expected_json):
+        input["payload"] = f"#cloud-config\n{input['payload']}"
         resp = client.post(
             "/v1/cloud-config/validate",
             json=input,

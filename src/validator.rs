@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::error::Result;
+use crate::schema::Schema;
 use jsonschema::output::{Annotations, BasicOutput, ErrorDescription, OutputUnit};
 use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
@@ -103,9 +104,9 @@ pub struct Validator {
 
 impl Validator {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        // TODO: add mechanism to fetch the schema on demand from schemastore
-        Validator::from_vendored_schema()
+    pub async fn new() -> Self {
+        let schema = Schema::get().await;
+        Validator::try_from(schema.schema()).expect("valid schema")
     }
 
     fn from_vendored_schema() -> Self {
@@ -251,7 +252,7 @@ mod test_validate {
 
     #[test]
     fn invalid_yaml() {
-        let validator = Validator::new();
+        let validator = Validator::from_vendored_schema();
         let validation = validator.validate_yaml("@asdf");
         assert_eq!(
             "found character that cannot start any token, while scanning for the next token",

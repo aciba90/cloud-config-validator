@@ -8,8 +8,8 @@ use axum::{
 };
 use serde_json::json;
 
-pub fn create_api() -> Router {
-    let validator = Validator::new();
+pub async fn create_api() -> Router {
+    let validator = Validator::new().await;
     let app_state = AppState { validator };
     let shared_state = Arc::new(app_state);
 
@@ -25,15 +25,15 @@ mod test {
     use axum_test_helper::TestClient;
     use hyper::StatusCode;
 
-    fn test_client() -> TestClient {
-        let api = create_api();
+    async fn test_client() -> TestClient {
+        let api = create_api().await;
 
         TestClient::new(api)
     }
 
     #[tokio::test]
     async fn root() {
-        let client = test_client();
+        let client = test_client().await;
         let res = client.get("/").send().await;
         assert_eq!(res.status(), StatusCode::OK);
         assert_eq!(res.text().await, "[\"/v1\"]");
@@ -41,7 +41,7 @@ mod test {
 
     #[tokio::test]
     async fn invalid_yaml() {
-        let client = test_client();
+        let client = test_client().await;
         let res = client
             .post("/v1/cloud-config/validate")
             .json(&json!({"payload": "\"a"}))

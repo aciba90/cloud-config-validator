@@ -7,7 +7,16 @@
       },
       "out": {
         "status_code": 200,
-        "json": {"annotations": [], "errors": [], "is_valid": true}
+        "json": {
+          "annotations": [],
+          "errors": [
+            {
+              "description": "Cloud-config needs to begin with \"#cloud-config\"",
+              "instance_path": ""
+            }
+          ],
+          "is_valid": true
+        }
       }
     },
     {
@@ -18,7 +27,11 @@
       },
       "out": {
         "status_code": 200,
-        "json": {"annotations": [], "errors": [], "is_valid": true}
+        "json": {
+          "annotations": [],
+          "errors": [],
+          "is_valid": true
+        }
       }
     }
   ]
