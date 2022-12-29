@@ -151,14 +151,12 @@ async fn resolve(resolver: Arc<Mutex<Resolver>>, schema: serde_json::Value) -> s
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::fs;
-    use std::io::prelude::*;
 
     #[tokio::test]
     async fn fetch() {
         let schema = Schema::get().await;
         println!("{}", serde_json::to_string_pretty(&schema.0).unwrap());
-        let mut file = fs::File::create("new_schema.json").unwrap();
-        write!(file, "{}", serde_json::to_string_pretty(&schema.0).unwrap()).unwrap();
+        // let mut file = std::fs::File::create("new_schema.json").unwrap();
+        // write!(file, "{}", serde_json::to_string_pretty(&schema.0).unwrap()).unwrap();
     }
 }

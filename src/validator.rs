@@ -66,13 +66,19 @@ impl From<BasicOutput<'_>> for Validation {
                     // XXX: avoid to_mut copy
                     if let Value::Object(obj) = &annotation.value().to_mut() {
                         if let Some(Value::Bool(true)) = obj.get("deprecated") {
+                            // look up deprecation description
+                            let mut description = String::from("DEPRECATED");
+                            if let Some(Value::String(dsc)) = obj.get("description") {
+                                description.push_str(": ");
+                                description.push_str(dsc.as_str());
+                            }
+
                             let new_annotation: ConfigAnnotation = ConfigAnnotation {
-                                description: "DEPRECATED".to_string(),
+                                description,
                                 instance_path: annotation.instance_location().to_string(),
                             };
                             annotations.push(new_annotation);
                         }
-                        // TODO: extract `deprecated_msg` if present
                     }
                 }
                 Self {
@@ -176,6 +182,7 @@ mod test_validate {
                     "properties": {
                       "y": {
                         "type": "integer",
+                        "description": "my description",
                         "deprecated": true
                       }
                     },
@@ -199,7 +206,7 @@ mod test_validate {
         let expected_validation = Validation {
             is_valid: true,
             annotations: vec![ConfigAnnotation {
-                description: "DEPRECATED".to_string(),
+                description: "DEPRECATED: my description".to_string(),
                 instance_path: "/x/y".to_string(),
             }],
             errors: VecDeque::new(),

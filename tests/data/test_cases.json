@@ -33,5 +33,45 @@
           "is_valid": true
         }
       }
+    },
+    {
+      "name": "apk_repos_additional_properties",
+      "in": {
+        "format": "yaml",
+        "payload": "#cloud-config\napk_repos:\n  alpine_repo:\n    version: v3.12\n    bogus: 1"
+      },
+      "out": {
+        "status_code": 200,
+        "json": {
+          "annotations": [],
+          "errors": [
+            {
+              "description": "Additional properties are not allowed ('bogus' was unexpected)",
+              "instance_path": "/apk_repos/alpine_repo"
+            }
+          ],
+          "is_valid": false
+        }
+      }
+    },
+    {
+      "name": "user_groups_uid_as_string",
+      "in": {
+        "format": "yaml",
+        "payload": "#cloud-config\nusers:\n  - name: a\n    uid: \"1743\""
+      },
+      "out": {
+        "status_code": 200,
+        "json": {
+          "annotations": [
+            {
+              "description": "DEPRECATED: The use of ``string`` type will be dropped after April 2027. Use an ``integer`` instead.",
+              "instance_path": "/users/0/uid"
+            }
+          ],
+          "errors": [],
+          "is_valid": true
+        }
+      }
     }
   ]
