@@ -1,7 +1,6 @@
-all: build
+CARGO=cargo
 
-integration_tests:
-	( (cargo run --bin local; sleep 2)& tox)
+all: build
 
 build:
 	snapcraft --debug
@@ -12,5 +11,19 @@ install:
 	snap services cloud-config-validator-test
 
 clean:
-	cargo clean
+	$(CARGO) clean
 	rm -rf cloud-config-validator*.snap
+
+integration_tests:
+	( (cargo run --bin local; sleep 2)& tox)
+
+lint: check fmt clippy
+
+check:
+	$(CARGO) check --all-targets
+
+clippy:
+	$(CARGO) clippy --all-targets -- -D warnings
+
+fmt:
+	$(CARGO) fmt --all -- --check
