@@ -2,6 +2,8 @@
 
 ## Installation
 
+To build and install the local validator as snap:
+
 ```sh
 $ make && sudo make install
 ```
@@ -42,3 +44,6 @@ $ sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v
 - snap: integration test
 - snap: add slot with the socket
 - snap: add to CI
+
+- clean-up: remove vendored jsonschema
+- unit test coverage
