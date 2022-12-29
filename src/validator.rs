@@ -113,8 +113,7 @@ impl Validator {
         Validator::try_from(schema.schema()).expect("valid schema")
     }
 
-    #[allow(dead_code)]
-    fn from_vendored_schema() -> Self {
+    pub fn from_vendored_schema() -> Self {
         let schema = Schema::from_vendored();
         Validator::try_from(schema.schema()).expect("valid schema")
     }

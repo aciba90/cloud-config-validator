@@ -5,18 +5,15 @@ use cloud_config_validator::{
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
-    validator.validate_yaml(&input)
+    validator.validate_yaml(input)
 }
 
-// If this reaches ~100 micro seconds we could potentially block the async runtime:
-// https://ryhl.io/blog/async-what-is-blocking/
-// TODO: create alarm ?
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let validator = Validator::new();
+    let validator = Validator::from_vendored_schema();
 
     let input = "\"a";
     c.bench_function("invalid yaml", |b| {
-        b.iter(|| raw_validate(&validator, black_box(&input)))
+        b.iter(|| raw_validate(&validator, black_box(input)))
     });
 
     let input = r#"#cloud-config
@@ -162,7 +159,7 @@ write_files:
 "#;
 
     c.bench_function("valid yaml", |b| {
-        b.iter(|| raw_validate(&validator, black_box(&input)))
+        b.iter(|| raw_validate(&validator, black_box(input)))
     });
 }
 
