@@ -27,25 +27,3 @@ $ sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v
   "is_valid": false
 }
 ```
-
-## TODO
-
-- Error handling. ApiError: encode format with type.
-
-- local/snap: logging to journald and file
-
-- OpenAPI doc generation.
-
-  - https://docs.rs/aide/latest/aide/
-  - https://github.com/tokio-rs/axum/issues/50
-
-- Return markers for annotations & errors: https://docs.rs/yaml-peg/latest/yaml_peg/
-
-- Port integration tests to rust.
-
-- snap: integration test
-- snap: add slot with the socket
-- snap: add to CI
-
-- clean-up: remove vendored jsonschema
-- unit test coverage
