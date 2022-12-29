@@ -3,10 +3,10 @@
 //! ```not_rust
 //! cargo run --bin server
 //! ```
-use std::net::SocketAddr;
+mod telemetry;
 
 use cloud_config_validator::api::create_api;
-use cloud_config_validator::telemetry;
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
