@@ -32,6 +32,8 @@ $ sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v
 
 - Error handling. ApiError: encode format with type.
 
+- local/snap: logging to journald and file
+
 - OpenAPI doc generation.
 
   - https://docs.rs/aide/latest/aide/

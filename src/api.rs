@@ -9,6 +9,7 @@ use axum::{
 use serde_json::json;
 use std::sync::RwLock;
 use tokio::time;
+use tower_http::trace::TraceLayer;
 
 pub async fn create_api() -> Router {
     let validator = Validator::new().await;
@@ -24,7 +25,7 @@ pub async fn create_api() -> Router {
             loop {
                 interval.tick().await;
                 // TODO: log event
-                println!("refreshing cloud-config jsonschema");
+                tracing::info!("refreshing cloud-config jsonschema");
                 let validator = Validator::new().await;
                 shared_state.write().unwrap().validator = validator;
             }
@@ -34,6 +35,7 @@ pub async fn create_api() -> Router {
     Router::new()
         .route("/", get(|| async { Json(json!(["/v1"])) }))
         .route("/v1/cloud-config/validate", post(validate))
+        .layer(TraceLayer::new_for_http())
         .with_state(shared_state)
 }
 

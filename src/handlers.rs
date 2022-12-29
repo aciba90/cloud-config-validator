@@ -9,6 +9,7 @@ use std::sync::RwLock;
 use crate::state::AppState;
 use crate::validator::CloudConfig;
 
+#[tracing::instrument(level = "info", skip(state, payload))] // do not leak the payload
 pub async fn validate(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(payload): Json<CloudConfig>,

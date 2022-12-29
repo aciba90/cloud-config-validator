@@ -15,6 +15,7 @@ const SOCK: &str = "unix.socket";
 #[cfg(unix)]
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
     unix::server().await;
 }
 
@@ -58,6 +59,7 @@ mod unix {
             .await
             .unwrap();
 
+        tracing::debug!("listening on {:?}", path);
         let uds = UnixListener::bind(path.clone()).unwrap();
 
         let app = create_api().await;
