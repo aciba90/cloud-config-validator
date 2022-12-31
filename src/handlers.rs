@@ -2,10 +2,11 @@ use std::sync::Arc;
 
 use axum::extract::State;
 use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::{extract::Json, response};
-use serde_json::{json, Value};
 use std::sync::RwLock;
 
+use crate::error::ApiError;
 use crate::state::AppState;
 use crate::validator::CloudConfig;
 
@@ -13,9 +14,7 @@ use crate::validator::CloudConfig;
 pub async fn validate(
     State(state): State<Arc<RwLock<AppState>>>,
     Json(payload): Json<CloudConfig>,
-) -> (StatusCode, Json<Value>) {
-    let mut status_code = StatusCode::OK;
-
+) -> Result<impl IntoResponse, ApiError> {
     // Note: `validate_yaml` over an unbound yaml could block the async runtime, causing a delay
     // in reponse time.
     // More info: https://ryhl.io/blog/async-what-is-blocking/
@@ -40,20 +39,8 @@ pub async fn validate(
             .validate_yaml(payload.payload());
         let _ = send.send(resp);
     });
-    let resp = recv.await.expect("Panic in rayon::spawn");
+    let resp = recv.await.expect("Panic in rayon::spawn")?;
 
-    match resp {
-        Ok(resp) => {
-            let resp =
-                serde_json::to_value(resp).expect("Validation response must be serializable");
-            (status_code, response::Json(resp))
-        }
-        Err(e) => {
-            status_code = StatusCode::BAD_REQUEST;
-            (
-                status_code,
-                response::Json(json!({"errors": [e.to_string()]})),
-            )
-        }
-    }
+    let resp = serde_json::to_value(resp).expect("Validation response must be serializable");
+    Ok((StatusCode::OK, response::Json(resp)))
 }

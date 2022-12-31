@@ -108,14 +108,14 @@ pub struct Validator {
 }
 
 impl Validator {
-    pub async fn new() -> Self {
-        let schema = Schema::get().await;
-        Validator::try_from(schema.schema()).expect("valid schema")
+    pub async fn new() -> Result<Self> {
+        let schema = Schema::get().await?;
+        Validator::try_from(schema.schema())
     }
 
-    pub fn from_vendored_schema() -> Self {
-        let schema = Schema::from_vendored();
-        Validator::try_from(schema.schema()).expect("valid schema")
+    pub fn from_vendored_schema() -> Result<Self> {
+        let schema = Schema::from_vendored()?;
+        Validator::try_from(schema.schema())
     }
 
     pub fn validate(&self, inst: &Value) -> Validation {
@@ -138,7 +138,7 @@ impl Validator {
         let payload: Value = match serde_yaml::from_str(payload) {
             Ok(p) => p,
             Err(e) => {
-                return Err(e);
+                return Err(crate::error::Error::InvalidYaml(e));
             }
         };
         let mut validation = self.validate(&payload);
@@ -152,16 +152,17 @@ impl Validator {
 }
 
 impl TryFrom<&Value> for Validator {
-    type Error = String;
+    type Error = crate::error::Error;
 
     fn try_from(schema: &Value) -> Result<Self, Self::Error> {
         let compiled = JSONSchema::options()
             .with_draft(jsonschema::Draft::Draft4)
-            .compile(schema)
-            .expect("A valid schema");
-        Ok(Self {
-            json_schema: compiled,
-        })
+            .compile(schema);
+
+        match compiled {
+            Err(e) => Err(Self::Error::InvalidSchema(e.to_string())),
+            Ok(json_schema) => Ok(Self { json_schema }),
+        }
     }
 }
 
@@ -170,6 +171,8 @@ mod test_validate {
 
     use jsonschema::Draft;
     use serde_json::json;
+
+    use crate::error::Error;
 
     use super::*;
     #[test]
@@ -258,11 +261,15 @@ mod test_validate {
 
     #[test]
     fn invalid_yaml() {
-        let validator = Validator::from_vendored_schema();
+        let validator = Validator::from_vendored_schema().unwrap();
         let validation = validator.validate_yaml("@asdf");
+        let error_msg = match validation {
+            Err(Error::InvalidYaml(e)) => e.to_string(),
+            _ => panic!("unexpected result"),
+        };
         assert_eq!(
             "found character that cannot start any token, while scanning for the next token",
-            validation.unwrap_err().to_string()
+            error_msg
         );
     }
 }

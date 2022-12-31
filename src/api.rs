@@ -12,22 +12,38 @@ use tokio::time;
 use tower_http::trace::TraceLayer;
 
 pub async fn create_api() -> Router {
-    let validator = Validator::new().await;
+    let validator = match Validator::new().await {
+        Err(e) => panic!("Error reading the JsonSchema: {}", e),
+        Ok(v) => v,
+    };
     let app_state = AppState { validator };
     let shared_state = Arc::new(RwLock::new(app_state));
 
-    // TODO: make interval period configurable
     // spawn job to refresh the schema periodically
     tokio::spawn({
+        // TODO: make interval period configurable
+        // TODO: skip first tick
         let mut interval = time::interval(Duration::from_secs(60 * 60)); // 1 hour
         let shared_state = shared_state.clone();
         async move {
             loop {
                 interval.tick().await;
-                // TODO: log event
                 tracing::info!("refreshing cloud-config jsonschema");
                 let validator = Validator::new().await;
-                shared_state.write().unwrap().validator = validator;
+                match validator {
+                    Err(e) => {
+                        tracing::error!(
+                            "Error reading new JsonSchema. Re-using the previous one: {}",
+                            e
+                        )
+                    }
+                    Ok(validator) => {
+                        shared_state
+                            .write()
+                            .expect("Error locking `ApiState`")
+                            .validator = validator
+                    }
+                };
             }
         }
     });

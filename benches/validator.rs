@@ -9,7 +9,7 @@ fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
 }
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let validator = Validator::from_vendored_schema();
+    let validator = Validator::from_vendored_schema().expect("valid json schema");
 
     let input = "\"a";
     c.bench_function("invalid yaml", |b| {
