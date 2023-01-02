@@ -30,3 +30,4 @@ parts:
     build-packages:
       - cargo
       - rustc
+      - pkg-config
