@@ -39,7 +39,7 @@ jobs:
     # TODO: This should not be needed
     - name: Warm up socket
       run: |
-        sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v http://asdf/ || true
+        sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v -XGET http://localhost/ || true
     - run: |
         sudo apt-get install -y tox
     - name: Integration tests
