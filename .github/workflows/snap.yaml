@@ -1,4 +1,5 @@
 name: snap
+
 on:
   push:
     tags:
@@ -9,6 +10,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -24,7 +29,7 @@ jobs:
     - run: |
         sudo snap install --dangerous ${{ steps.build-snap.outputs.snap }}
     - run: |
-        snap restart cloud-config-validator.daemon
+        sudo snap restart cloud-config-validator.daemon
     # Do some testing with the snap
     - run: ls -hal /var/snap/cloud-config-validator/common
     - run: file /var/snap/cloud-config-validator/common/unix.socket
