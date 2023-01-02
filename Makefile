@@ -8,8 +8,8 @@ build:
 
 install:
 	snap install --dangerous &(SNAP_NAME)*.snap
-	@snap restart cloud-config-validator-test.daemon
-	snap services cloud-config-validator-test
+	@snap restart &(SNAP_NAME).daemon
+	snap services &(SNAP_NAME)
 
 clean:
 	$(CARGO) clean
