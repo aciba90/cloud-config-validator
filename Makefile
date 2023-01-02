@@ -1,4 +1,5 @@
 CARGO=cargo
+SNAP_NAME=cloud-config-validator
 
 all: build
 
@@ -6,9 +7,9 @@ build:
 	snapcraft --debug
 
 install:
-	snap install --dangerous cloud-config-validator-test*.snap
-	@snap restart cloud-config-validator-test.daemon
-	snap services cloud-config-validator-test
+	snap install --dangerous &(SNAP_NAME)*.snap
+	@snap restart &(SNAP_NAME).daemon
+	snap services &(SNAP_NAME)
 
 clean:
 	$(CARGO) clean
@@ -16,6 +17,9 @@ clean:
 
 integration_tests:
 	( (cargo run --bin local; sleep 2)& tox)
+
+test_snap:
+	sudo CCV_SOCKET="/var/snap/$(SNAP_NAME)/common/unix.socket" tox
 
 lint: check fmt clippy
 
