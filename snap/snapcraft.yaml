@@ -24,7 +24,7 @@ apps:
     refresh-mode: restart
 
 parts:
-  cloud-config-validator-test:
+  cloud-config-validator:
     plugin: rust
     source: .
     build-packages:

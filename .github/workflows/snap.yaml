@@ -25,7 +25,11 @@ jobs:
         sudo snap install --dangerous ${{ steps.build-snap.outputs.snap }}
     # Do some testing with the snap
     - run: |
-        tox
+        sudo apt-get install -y tox
+    - run: |
+        sudo tox
+      env:
+        CCV_SOCKET: /var/snap/cloud-config-validator/common/unix.socket
     - uses: actions/upload-artifact@v3
       with:
         name: cloud-config-validator-local

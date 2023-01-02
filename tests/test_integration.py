@@ -2,13 +2,15 @@ import pytest
 import httpx
 from pathlib import Path
 import json
+import os
 
 DATA_PATH = Path(__file__).parent / "data"
 
 
 @pytest.fixture(scope="session")
 def client() -> httpx.Client:
-    transport = httpx.HTTPTransport(uds="/tmp/cloud-config-validator/unix.socket")
+    uds = os.getenv("CCV_SOCKET", "/tmp/cloud-config-validator/unix.socket")
+    transport = httpx.HTTPTransport(uds=uds)
     client = httpx.Client(base_url="http://cloud-config-validator", transport=transport)
 
     yield client
