@@ -24,6 +24,8 @@ jobs:
     - run: |
         sudo snap install --dangerous ${{ steps.build-snap.outputs.snap }}
     # Do some testing with the snap
+    - run: ls -hal /var/snap/cloud-config-validator/common
+    - run: file /var/snap/cloud-config-validator/common/unix.socket
     - run: |
         sudo apt-get install -y tox
     - run: |
