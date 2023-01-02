@@ -30,4 +30,5 @@ parts:
     build-packages:
       - cargo
       - rustc
+      - libssl-dev
       - pkg-config
