@@ -25,20 +25,30 @@ jobs:
     - uses: snapcore/action-build@v1
       id: build-snap
 
-    # Make sure the snap is installable
-    - run: |
+    - name: Install Snap
+      run: |
         sudo snap install --dangerous ${{ steps.build-snap.outputs.snap }}
-    - run: |
+    # TODO: This should not be needed
+    - name: Restart service
+      run: |
         sudo snap restart cloud-config-validator.daemon
+
     # Do some testing with the snap
-    - run: ls -hal /var/snap/cloud-config-validator/common
-    - run: file /var/snap/cloud-config-validator/common/unix.socket
+    - name: Verify socket
+      run: file /var/snap/cloud-config-validator/common/unix.socket
+    # TODO: This should not be needed
+    - name: Warm up socket
+      run: |
+        sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v http://asdf/ || true
     - run: |
         sudo apt-get install -y tox
-    - run: |
-        sudo tox
+    - name: Integration tests
+      run: |
+        sudo CCV_SOCKET=$CCV_SOCKET tox
       env:
         CCV_SOCKET: /var/snap/cloud-config-validator/common/unix.socket
+
+    # Upload artifact
     - uses: actions/upload-artifact@v3
       with:
         name: cloud-config-validator-local
