@@ -33,15 +33,9 @@ jobs:
       run: |
         sudo snap restart cloud-config-validator.daemon
 
-    # Do some testing with the snap
+    # Test the snap
     - name: Verify socket
       run: file /var/snap/cloud-config-validator/common/unix.socket
-    # - name: Setup upterm session
-    #  uses: lhotari/action-upterm@v1
-    # TODO: This should not be needed
-      # - name: Warm up socket
-      #   run: |
-        #  sudo curl --max-time 10 --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v -XGET http://localhost/ || true
     - run: |
         sudo apt-get install -y tox
     - name: Integration tests
@@ -51,10 +45,10 @@ jobs:
         CCV_SOCKET: /var/snap/cloud-config-validator/common/unix.socket
 
     # Upload artifact
-    - uses: actions/upload-artifact@v3
-      with:
-        name: cloud-config-validator-local
-        path: ${{ steps.build-snap.outputs.snap }}
+    # - uses: actions/upload-artifact@v3
+    #   with:
+    #     name: cloud-config-validator-local
+    #     path: ${{ steps.build-snap.outputs.snap }}
 
   # TODO: enable release stanza
   # publish:
