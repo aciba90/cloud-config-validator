@@ -36,10 +36,12 @@ jobs:
     # Do some testing with the snap
     - name: Verify socket
       run: file /var/snap/cloud-config-validator/common/unix.socket
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
     # TODO: This should not be needed
     - name: Warm up socket
       run: |
-        sudo curl --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v -XGET http://localhost/ || true
+        sudo curl --max-time 10 --unix-socket /var/snap/cloud-config-validator/common/unix.socket -v -XGET http://localhost/ || true
     - run: |
         sudo apt-get install -y tox
     - name: Integration tests
