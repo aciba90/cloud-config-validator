@@ -7,9 +7,9 @@ build:
 	snapcraft --debug
 
 install:
-	snap install --dangerous &(SNAP_NAME)*.snap
-	@snap restart &(SNAP_NAME).daemon
-	snap services &(SNAP_NAME)
+	snap install --dangerous $(SNAP_NAME)*.snap
+	@snap restart $(SNAP_NAME).daemon
+	snap services $(SNAP_NAME)
 
 clean:
 	$(CARGO) clean
