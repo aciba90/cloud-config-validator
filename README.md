@@ -8,17 +8,6 @@ The validation endpoints execute the validation step (which is a blocking CPU-bo
 
 The jsonschema is parsed at start time and refreshed periodically. And it is shared across threads.
 
-## Installation
-
-To build and install the local validator as snap:
-
-```sh
-# Install snapcraft if not already done:
-# sudo snap install snapcraft --classic
-
-$ make && sudo make install
-```
-#
 ## Examples
 
 ```sh
