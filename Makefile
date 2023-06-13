@@ -16,7 +16,9 @@ clean:
 	rm -rf cloud-config-validator*.snap
 
 integration_tests:
-	( (cargo run --bin local; sleep 2)& tox)
+	bash -c "trap 'kill -- -$$$$' EXIT; echo $$$$; sleep 1"
+	# (cargo run --bin server &); \
+	# sleep 2; tox
 
 test_snap:
 	sudo CCV_SOCKET="/var/snap/$(SNAP_NAME)/common/unix.socket" tox

@@ -11,11 +11,11 @@ logger = logging.getLogger(__file__)
 
 @pytest.fixture(scope="session")
 def client() -> httpx.Client:
-    uds = os.getenv("CCV_SOCKET", "/tmp/cloud-config-validator/unix.socket")
-    logger.info("Attemp to connect to socket: %s", uds)
+    host = os.getenv("CCV_HOST", "0.0.0.0")
+    port = os.getenv("CCV_PORT", "3000")
+    logger.info("Testing against %s:%s", host, port)
 
-    transport = httpx.HTTPTransport(uds=uds)
-    client = httpx.Client(base_url="http://cloud-config-validator", transport=transport)
+    client = httpx.Client(base_url=f"http://{host}:{port}")
 
     yield client
 

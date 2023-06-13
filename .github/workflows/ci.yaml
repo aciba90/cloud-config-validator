@@ -53,3 +53,12 @@ jobs:
           components: clippy
       - run: cargo clippy --all-targets -- -D warnings
 
+  integration-test:
+    # needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --bin server
+      - run: sudo apt-get install -y tox
+      - run: (cargo run --bin server &); sleep 10 && tox
