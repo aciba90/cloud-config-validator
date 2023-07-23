@@ -54,11 +54,14 @@ jobs:
       - run: cargo clippy --all-targets -- -D warnings
 
   integration-test:
-    # needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/build-push-action@v4
+        with:
+          context: .
+          load: true
+          tags: ccv:test
       - run: sudo apt-get install -y tox
-      - run: (cargo run &); sleep 5 && tox
+      - run: (docker run -p 3000:3000 ccv:test &); sleep 5 && tox
