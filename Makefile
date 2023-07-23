@@ -1,5 +1,4 @@
 CARGO=cargo
-SNAP_NAME=cloud-config-validator
 
 all: lint
 
