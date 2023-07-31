@@ -1,3 +1,4 @@
+#!/bin/env python3
 from pathlib import Path
 import json
 
@@ -26,7 +27,7 @@ def main():
     schema = json.loads(SCHEMA_INPUT.read_text())
     defs = schema.pop("$defs")
     new_schema = resolve_references(schema, defs)
-    print(json.dumps(new_schema))
+    print(json.dumps(new_schema, indent=2))
 
 
 if __name__ == "__main__":

@@ -65,11 +65,38 @@ impl From<BasicOutput<'_>> for Validation {
                 for annotation in out_annotations {
                     // XXX: avoid to_mut copy
                     if let Value::Object(obj) = &annotation.value().to_mut() {
+                        // Build deprecation description
                         if let Some(Value::Bool(true)) = obj.get("deprecated") {
-                            // look up deprecation description
-                            let mut description = String::from("DEPRECATED");
-                            if let Some(Value::String(dsc)) = obj.get("description") {
-                                description.push_str(": ");
+                            let mut description = String::from("Deprecated");
+                            if let Some(Value::String(cloud_init_version)) =
+                                obj.get("changed_version")
+                            {
+                                description.push_str(" in version ");
+                                description.push_str(cloud_init_version.as_str());
+                            }
+
+                            if let Some(Value::String(dsc)) = obj.get("deprecated_description") {
+                                description.push_str(". ");
+                                description.push_str(dsc.as_str());
+                            }
+
+                            let new_annotation: ConfigAnnotation = ConfigAnnotation {
+                                description,
+                                instance_path: annotation.instance_location().to_string(),
+                            };
+                            annotations.push(new_annotation);
+                        } else if let Some(Value::Bool(true)) = obj.get("changed") {
+                            let mut description = String::from("Changed");
+
+                            if let Some(Value::String(cloud_init_version)) =
+                                obj.get("changed_version")
+                            {
+                                description.push_str(" in version ");
+                                description.push_str(cloud_init_version.as_str());
+                            }
+
+                            if let Some(Value::String(dsc)) = obj.get("changed_description") {
+                                description.push_str(". ");
                                 description.push_str(dsc.as_str());
                             }
 
@@ -184,7 +211,7 @@ mod test_validate {
                     "properties": {
                       "y": {
                         "type": "integer",
-                        "description": "my description",
+                        "deprecated_description": "my description",
                         "deprecated": true
                       }
                     },
@@ -208,7 +235,7 @@ mod test_validate {
         let expected_validation = Validation {
             is_valid: true,
             annotations: vec![ConfigAnnotation {
-                description: "DEPRECATED: my description".to_string(),
+                description: "Deprecated. my description".to_string(),
                 instance_path: "/x/y".to_string(),
             }],
             errors: VecDeque::new(),

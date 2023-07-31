@@ -65,7 +65,7 @@
         "json": {
           "annotations": [
             {
-              "description": "DEPRECATED: The use of ``string`` type will be dropped after April 2027. Use an ``integer`` instead.",
+              "description": "Changed in version 22.3. The use of ``string`` type is deprecated. Use an ``integer`` instead.",
               "instance_path": "/users/0/uid"
             }
           ],
