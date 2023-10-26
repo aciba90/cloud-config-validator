@@ -34,7 +34,7 @@ struct ConfigError {
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Validation {
-    is_valid: bool,
+    pub is_valid: bool,
     annotations: Vec<ConfigAnnotation>,
     errors: VecDeque<ConfigError>,
 }
