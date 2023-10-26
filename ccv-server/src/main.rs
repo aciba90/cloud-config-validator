@@ -25,7 +25,7 @@ mod telemetry {
     }
 }
 
-use cloud_config_validator::api::create_api;
+use ccv_server::api::create_api;
 use std::net::SocketAddr;
 
 #[tokio::main]

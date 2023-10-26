@@ -8,10 +8,10 @@ clean:
 lint: check fmt clippy
 
 check:
-	$(CARGO) check --all-targets
+	$(CARGO) check --all --all-targets
 
 clippy:
-	$(CARGO) clippy --all-targets -- -D warnings
+	$(CARGO) clippy --all --all-targets -- -D warnings
 
 fmt:
 	$(CARGO) fmt --all -- --check

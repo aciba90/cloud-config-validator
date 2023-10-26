@@ -22,10 +22,9 @@ impl Schema {
         Ok(Self(resolve(resolver, schema).await?))
     }
 
-    #[allow(dead_code)]
     pub fn from_vendored() -> Result<Self> {
         static SCHEMA: &str =
-            include_str!("../schemas/versions.schema.cloud-config.resolved.1.json");
+            include_str!("../../schemas/versions.schema.cloud-config.resolved.1.json");
         let schema = serde_json::from_str(SCHEMA)?;
         Ok(Self(schema))
     }

@@ -1,7 +1,5 @@
-use cloud_config_validator::{
-    error::Result,
-    validator::{Validation, Validator},
-};
+use ccv_core::error::Result;
+use ccv_core::validator::{Validation, Validator};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 fn raw_validate(validator: &Validator, input: &str) -> Result<Validation> {
