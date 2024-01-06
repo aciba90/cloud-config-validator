@@ -1,28 +1,36 @@
-use std::{fs, path::Path, process};
-
-use ccv_core::validator::Validator;
+use ccv_core::{schema::ConfigKind, validator::Validator};
+use clap::builder::TypedValueParser as _;
 use clap::Parser;
+use std::{fs, path::Path, path::PathBuf, process};
 
 #[derive(Parser)]
-#[command(name = "ccv")]
+#[command(name = "ccv", author, version, about, long_about = None)]
 enum CCVCli {
     Validate(ValidateArgs),
 }
 
 #[derive(clap::Args)]
-#[command(author, version, about, long_about = None)]
 struct ValidateArgs {
-    file: Option<std::path::PathBuf>,
+    #[arg(default_value=PathBuf::from("-").into_os_string())]
+    file: std::path::PathBuf,
+
+    #[arg(
+        long,
+        default_value_t = ConfigKind::CloudConfig,
+        value_parser = clap::builder::PossibleValuesParser::new(["cloudconfig", "networkconfig"])
+            .map(|s| s.parse::<ConfigKind>().unwrap()),
+    )]
+    kind: ConfigKind,
 }
 
 #[tokio::main]
 async fn main() -> process::ExitCode {
     let CCVCli::Validate(args) = CCVCli::parse();
 
-    let payload = if args.file.is_none() || Some(Path::new("-")) == args.file.as_deref() {
+    let payload = if Path::new("-") == args.file {
         todo!("read stdin");
     } else {
-        let f = args.file.expect("args.file is not None");
+        let f = args.file;
         match fs::read_to_string(&f) {
             Ok(p) => p,
             Err(e) => {
@@ -31,7 +39,7 @@ async fn main() -> process::ExitCode {
             }
         }
     };
-    let validator = match Validator::new().await {
+    let validator = match Validator::new(args.kind).await {
         Err(e) => panic!("Error reading the JsonSchema: {}", e),
         Ok(v) => v,
     };

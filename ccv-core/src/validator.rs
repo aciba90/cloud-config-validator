@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::error::Result;
-use crate::schema::Schema;
+use crate::schema::{ConfigKind, Schema};
 use jsonschema::output::{Annotations, BasicOutput, ErrorDescription, OutputUnit};
 use jsonschema::JSONSchema;
 use serde::{Deserialize, Serialize};
@@ -132,17 +132,24 @@ impl From<BasicOutput<'_>> for Validation {
 #[derive(Debug)]
 pub struct Validator {
     json_schema: JSONSchema,
+    kind: ConfigKind,
 }
 
 impl Validator {
-    pub async fn new() -> Result<Self> {
-        let schema = Schema::get().await?;
-        Validator::try_from(schema.schema())
+    pub async fn new(kind: ConfigKind) -> Result<Self> {
+        let schema = Schema::get(kind.clone()).await?;
+        Ok(Validator {
+            kind,
+            json_schema: jsonschema_try_from(schema.schema())?,
+        })
     }
 
     pub fn from_vendored_schema() -> Result<Self> {
         let schema = Schema::from_vendored()?;
-        Validator::try_from(schema.schema())
+        Ok(Validator {
+            kind: ConfigKind::CloudConfig,
+            json_schema: jsonschema_try_from(schema.schema())?,
+        })
     }
 
     pub fn validate(&self, inst: &Value) -> Validation {
@@ -150,7 +157,9 @@ impl Validator {
     }
 
     pub fn validate_yaml(&self, payload: &str) -> Result<Validation> {
-        let format_error = if !payload.starts_with(CLOUD_CONFIG_HEADER) {
+        let format_error = if matches!(self.kind, ConfigKind::CloudConfig)
+            && !payload.starts_with(CLOUD_CONFIG_HEADER)
+        {
             Some(ConfigError {
                 description: format!(
                     "Cloud-config needs to begin with \"{}\"",
@@ -178,18 +187,14 @@ impl Validator {
     }
 }
 
-impl TryFrom<&Value> for Validator {
-    type Error = crate::error::Error;
+fn jsonschema_try_from(schema: &Value) -> Result<JSONSchema> {
+    let compiled = JSONSchema::options()
+        .with_draft(jsonschema::Draft::Draft4)
+        .compile(schema);
 
-    fn try_from(schema: &Value) -> Result<Self, Self::Error> {
-        let compiled = JSONSchema::options()
-            .with_draft(jsonschema::Draft::Draft4)
-            .compile(schema);
-
-        match compiled {
-            Err(e) => Err(Self::Error::InvalidSchema(e.to_string())),
-            Ok(json_schema) => Ok(Self { json_schema }),
-        }
+    match compiled {
+        Err(e) => Err(crate::error::Error::InvalidSchema(e.to_string())),
+        Ok(json_schema) => Ok(json_schema),
     }
 }
 
