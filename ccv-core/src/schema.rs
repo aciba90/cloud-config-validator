@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Display, str::FromStr, sync::Arc};
 
 use crate::error::{self, Result};
 use async_recursion::async_recursion;
@@ -7,26 +7,60 @@ use futures::lock::Mutex;
 use reqwest::Url;
 use serde_json::{Map, Value};
 
+#[derive(Debug, Clone)]
+pub enum ConfigKind {
+    CloudConfig,
+    NetworkConfig,
+}
+
+impl ConfigKind {
+    fn url(&self) -> &str {
+        match self {
+            Self::CloudConfig => "https://raw.githubusercontent.com/canonical/cloud-init/main/cloudinit/config/schemas/versions.schema.cloud-config.json",
+            Self::NetworkConfig => "https://raw.githubusercontent.com/canonical/cloud-init/main/cloudinit/config/schemas/schema-network-config-v1.json",
+        }
+    }
+}
+
+impl FromStr for ConfigKind {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::prelude::v1::Result<Self, Self::Err> {
+        match s.to_ascii_lowercase().as_str() {
+            "cloudconfig" => Ok(Self::CloudConfig),
+            "networkconfig" => Ok(Self::NetworkConfig),
+            _ => Err(format!("Not a valid str variant: {}", s)),
+        }
+    }
+}
+
+impl Display for ConfigKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::CloudConfig => write!(f, "cloudconfig"),
+            Self::NetworkConfig => write!(f, "networkconfig"),
+        }
+    }
+}
+
 #[derive(Debug)]
-pub struct Schema(serde_json::Value);
+pub struct Schema(serde_json::Value, ConfigKind);
 
 impl Schema {
-    pub async fn get() -> Result<Self> {
+    pub async fn get(kind: ConfigKind) -> Result<Self> {
         let client = reqwest::Client::new();
-        let resp = client.get(
-            "https://raw.githubusercontent.com/canonical/cloud-init/main/cloudinit/config/schemas/versions.schema.cloud-config.json"
-        ).send().await?;
+        let resp = client.get(kind.url()).send().await?;
         let schema = resp.json::<serde_json::Value>().await?;
 
         let resolver = Arc::new(Mutex::new(Resolver::new()));
-        Ok(Self(resolve(resolver, schema).await?))
+        Ok(Self(resolve(resolver, schema).await?, kind))
     }
 
     pub fn from_vendored() -> Result<Self> {
         static SCHEMA: &str =
             include_str!("../../schemas/versions.schema.cloud-config.resolved.1.json");
         let schema = serde_json::from_str(SCHEMA)?;
-        Ok(Self(schema))
+        Ok(Self(schema, ConfigKind::CloudConfig))
     }
 
     pub fn schema(&self) -> &Value {
@@ -144,7 +178,9 @@ mod test {
 
     #[tokio::test]
     async fn fetch() {
-        let schema = Schema::get().await.expect("valid schema");
+        let schema = Schema::get(ConfigKind::CloudConfig)
+            .await
+            .expect("valid schema");
         println!("{}", serde_json::to_string_pretty(&schema.0).unwrap());
         // let mut file = std::fs::File::create("new_schema.json").unwrap();
         // write!(file, "{}", serde_json::to_string_pretty(&schema.0).unwrap()).unwrap();

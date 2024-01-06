@@ -5,6 +5,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use ccv_core::schema::ConfigKind;
 use serde_json::json;
 use std::sync::RwLock;
 use tokio::time;
@@ -60,7 +61,8 @@ pub async fn validate(
 }
 
 pub async fn create_api() -> Router {
-    let validator = match Validator::new().await {
+    let kind = ConfigKind::CloudConfig;
+    let validator = match Validator::new(kind.clone()).await {
         Err(e) => panic!("Error reading the JsonSchema: {}", e),
         Ok(v) => v,
     };
@@ -77,7 +79,7 @@ pub async fn create_api() -> Router {
             loop {
                 interval.tick().await;
                 tracing::info!("refreshing cloud-config jsonschema");
-                let validator = Validator::new().await;
+                let validator = Validator::new(kind.clone()).await;
                 match validator {
                     Err(e) => {
                         tracing::error!(
