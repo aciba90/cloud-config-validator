@@ -108,21 +108,20 @@ pub async fn create_api() -> Router {
 #[cfg(test)]
 mod test {
     use super::*;
-    use axum_test_helper::TestClient;
-    use hyper::StatusCode;
+    use axum_test::TestServer;
 
-    async fn test_client() -> TestClient {
+    async fn test_client() -> TestServer {
         let api = create_api().await;
 
-        TestClient::new(api)
+        TestServer::new(api).unwrap()
     }
 
     #[tokio::test]
     async fn root() {
         let client = test_client().await;
-        let res = client.get("/").send().await;
-        assert_eq!(res.status(), StatusCode::OK);
-        assert_eq!(res.text().await, "[\"/v1\"]");
+        let res = client.get("/").await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(res.text(), "[\"/v1\"]");
     }
 
     #[tokio::test]
@@ -131,9 +130,8 @@ mod test {
         let res = client
             .post("/v1/cloud-config/validate")
             .json(&json!({"payload": "\"a"}))
-            .send()
             .await;
-        assert_eq!(res.status(), StatusCode::BAD_REQUEST);
-        assert_eq!(res.text().await, "{\"errors\":[\"found unexpected end of stream at line 1 column 3, while scanning a quoted scalar\"]}");
+        assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
+        assert_eq!(res.text(), "{\"errors\":[\"found unexpected end of stream at line 1 column 3, while scanning a quoted scalar\"]}");
     }
 }

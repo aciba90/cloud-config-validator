@@ -27,6 +27,7 @@ mod telemetry {
 
 use ccv_server::api::create_api;
 use std::net::SocketAddr;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
@@ -35,9 +36,7 @@ async fn main() {
     let api = create_api().await;
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let listener = TcpListener::bind(addr).await.expect("cannot bind addr");
     tracing::debug!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(api.into_make_service())
-        .await
-        .unwrap();
+    axum::serve(listener, api).await.unwrap();
 }
