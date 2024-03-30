@@ -6,11 +6,19 @@ use std::process::Command;
 #[test]
 fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("ccv-cli")?;
-
     cmd.arg("validate").arg("test/file/doesnt/exist");
-    cmd.assert().failure().stderr(predicate::str::contains(
-        r#"Error reading "test/file/doesnt/exist": No such file or directory (os error 2)"#,
-    ));
+
+    #[cfg(not(windows))]
+    let os_error = "No such file or directory (os error 2)";
+    #[cfg(windows)]
+    let os_error = "The system cannot find the path specified. (os error 3)";
+
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains(format!(
+            r#"Error reading "test/file/doesnt/exist": {}"#,
+            os_error
+        )));
 
     Ok(())
 }
