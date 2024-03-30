@@ -27,10 +27,15 @@ def test_root_get(client):
     assert resp.json() == ["/v1"]
 
 
-def test_x(client):
+def test_dummy(client):
+    cloud_config = """\
+#cloud-config
+runcmd:
+- echo 'Hello, World!' > /var/tmp/hello-world.txt
+"""
     resp = client.post(
         "/v1/cloud-config/validate",
-        json={"format": "yaml", "payload": "#cloud-config\nasdfafd: 1"},
+        json={"format": "yaml", "payload": cloud_config},
     )
     assert resp.status_code == 200, resp.content
     assert resp.json() == {"annotations": [], "errors": [], "is_valid": True}
@@ -50,7 +55,7 @@ class TestValidation:
         "input, status_code, expected_json",
         get_test_cases(DATA_PATH / "test_cases.json"),
     )
-    def test_0(self, client, input, status_code, expected_json):
+    def test_cases(self, client, input, status_code, expected_json):
         resp = client.post(
             "/v1/cloud-config/validate",
             json=input,

@@ -85,6 +85,20 @@
   },
   {
     "in": {
+      "payload": "# cloud-init version 23.4 will generate a deb822 formatted sources\n# file at /etc/apt/sources.list.d/<distro>.sources instead of\n# /etc/apt/sources.list when  `sources_list` content is deb822\n# format.\napt:\n    sources_list: |\n      Types: deb\n      URIs: http://archive.ubuntu.com/ubuntu/\n      Suites: $RELEASE\n      Components: main\n"
+    },
+    "name": "cc_apt_configure_example_1",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
       "payload": "apt_pipelining: false"
     },
     "name": "cc_apt_pipelining_example_0",
@@ -99,7 +113,7 @@
   },
   {
     "in": {
-      "payload": "apt_pipelining: none"
+      "payload": "apt_pipelining: os"
     },
     "name": "cc_apt_pipelining_example_1",
     "out": {
@@ -113,37 +127,9 @@
   },
   {
     "in": {
-      "payload": "apt_pipelining: unchanged"
-    },
-    "name": "cc_apt_pipelining_example_2",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "apt_pipelining: os"
-    },
-    "name": "cc_apt_pipelining_example_3",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
       "payload": "apt_pipelining: 3"
     },
-    "name": "cc_apt_pipelining_example_4",
+    "name": "cc_apt_pipelining_example_2",
     "out": {
       "json": {
         "annotations": [],
@@ -379,6 +365,20 @@
   },
   {
     "in": {
+      "payload": "# For Alpine Linux set specific keyboard layout and variant,\n# as used by setup-keymap. Model and options are ignored.\nkeyboard:\n  layout: gb\n  variant: gb-extd\n"
+    },
+    "name": "cc_keyboard_example_2",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
       "payload": "# Do not print any SSH keys to system console\nssh:\n  emit_keys_to_console: false\n"
     },
     "name": "cc_keys_to_console_example_0",
@@ -393,7 +393,7 @@
   },
   {
     "in": {
-      "payload": "# Do not print certain ssh key types to console\nssh_key_console_blacklist: [dsa, ssh-dss]\n"
+      "payload": "# Do not print certain ssh key types to console\nssh_key_console_blacklist: [rsa]\n"
     },
     "name": "cc_keys_to_console_example_1",
     "out": {
@@ -547,20 +547,6 @@
   },
   {
     "in": {
-      "payload": "# Do not migrate cloud-init semaphores\nmigrate: false\n"
-    },
-    "name": "cc_migrator_example_0",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
       "payload": "# Mount ephemeral0 with \"noexec\" flag, /dev/sdc with mount_default_fields,\n# and /dev/xvdh with custom fs_passno \"0\" to avoid fsck on the mount.\n# Also provide an automatically sized swap with a max size of 10485760\n# bytes.\nmounts:\n    - [ /dev/ephemeral0, /mnt, auto, \"defaults,noexec\" ]\n    - [ sdc, /opt/data ]\n    - [ xvdh, /opt/data, auto, \"defaults,nofail\", \"0\", \"0\" ]\nmount_default_fields: [None, None, auto, \"defaults,nofail\", \"0\", \"2\"]\nswap:\n    filename: /my/swapfile\n    size: auto\n    maxsize: 10485760\n"
     },
     "name": "cc_mounts_example_0",
@@ -617,7 +603,7 @@
   },
   {
     "in": {
-      "payload": "packages:\n  - pwgen\n  - pastebinit\n  - [libpython3.8, 3.8.10-0ubuntu1~20.04.2]\npackage_update: true\npackage_upgrade: true\npackage_reboot_if_required: true\n"
+      "payload": "packages:\n  - pwgen\n  - pastebinit\n  - [libpython3.8, 3.8.10-0ubuntu1~20.04.2]\n  - snap:\n    - certbot\n    - [juju, --edge]\n    - [lxd, --channel=5.15/stable]\n  - apt:\n    - mg\npackage_update: true\npackage_upgrade: true\npackage_reboot_if_required: true\n"
     },
     "name": "cc_package_update_upgrade_install_example_0",
     "out": {
@@ -645,7 +631,7 @@
   },
   {
     "in": {
-      "payload": "phone_home:\n    url: http://example.com/$INSTANCE_ID/\n    post:\n        - pub_key_dsa\n        - pub_key_rsa\n        - pub_key_ecdsa\n        - pub_key_ed25519\n        - instance_id\n        - hostname\n        - fqdn\n    tries: 5\n"
+      "payload": "phone_home:\n    url: http://example.com/$INSTANCE_ID/\n    post:\n        - pub_key_rsa\n        - pub_key_ecdsa\n        - pub_key_ed25519\n        - instance_id\n        - hostname\n        - fqdn\n    tries: 5\n"
     },
     "name": "cc_phone_home_example_1",
     "out": {
@@ -953,9 +939,23 @@
   },
   {
     "in": {
-      "payload": "hostname: myhost\nfqdn: myhost.example.com\nprefer_fqdn_over_hostname: true\n"
+      "payload": "hostname: myhost\ncreate_hostname_file: true\nfqdn: myhost.example.com\nprefer_fqdn_over_hostname: true\n"
     },
     "name": "cc_set_hostname_example_1",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# On a machine without an ``/etc/hostname`` file, don't create it\n# In most clouds, this will result in a DHCP-configured hostname\n# provided by the cloud\ncreate_hostname_file: false\n"
+    },
+    "name": "cc_set_hostname_example_2",
     "out": {
       "json": {
         "annotations": [],
@@ -1093,7 +1093,7 @@
   },
   {
     "in": {
-      "payload": "ssh_keys:\n  rsa_private: |\n    -----BEGIN RSA PRIVATE KEY-----\n    MIIBxwIBAAJhAKD0YSHy73nUgysO13XsJmd4fHiFyQ+00R7VVu2iV9Qco\n    ...\n    -----END RSA PRIVATE KEY-----\n  rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEAoPRhIfLvedSDKw7Xd ...\n  rsa_certificate: |\n    ssh-rsa-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQt ...\n  dsa_private: |\n    -----BEGIN DSA PRIVATE KEY-----\n    MIIBxwIBAAJhAKD0YSHy73nUgysO13XsJmd4fHiFyQ+00R7VVu2iV9Qco\n    ...\n    -----END DSA PRIVATE KEY-----\n  dsa_public: ssh-dsa AAAAB3NzaC1yc2EAAAABIwAAAGEAoPRhIfLvedSDKw7Xd ...\n  dsa_certificate: |\n    ssh-dsa-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQt ...\nssh_authorized_keys:\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEA3FSyQwBI6Z+nCSjUU ...\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA3I7VUf2l5gSn5uavROsc5HRDpZ ...\nssh_deletekeys: true\nssh_genkeytypes: [rsa, dsa, ecdsa, ed25519]\ndisable_root: true\ndisable_root_opts: no-port-forwarding,no-agent-forwarding,no-X11-forwarding\nallow_public_ssh_keys: true\nssh_quiet_keygen: true\nssh_publish_hostkeys:\n  enabled: true\n  blacklist: [dsa]\n"
+      "payload": "ssh_keys:\n  rsa_private: |\n    -----BEGIN RSA PRIVATE KEY-----\n    MIIBxwIBAAJhAKD0YSHy73nUgysO13XsJmd4fHiFyQ+00R7VVu2iV9Qco\n    ...\n    -----END RSA PRIVATE KEY-----\n  rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEAoPRhIfLvedSDKw7Xd ...\n  rsa_certificate: |\n    ssh-rsa-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQt ...\nssh_authorized_keys:\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAGEA3FSyQwBI6Z+nCSjUU ...\n  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA3I7VUf2l5gSn5uavROsc5HRDpZ ...\nssh_deletekeys: true\nssh_genkeytypes: [rsa, ecdsa, ed25519]\ndisable_root: true\ndisable_root_opts: no-port-forwarding,no-agent-forwarding,no-X11-forwarding\nallow_public_ssh_keys: true\nssh_quiet_keygen: true\nssh_publish_hostkeys:\n  enabled: true\n  blacklist: [rsa]\n"
     },
     "name": "cc_ssh_example_0",
     "out": {
@@ -1135,104 +1135,6 @@
   },
   {
     "in": {
-      "payload": "# Attach the machine to an Ubuntu Advantage support contract with a\n# UA contract token obtained from https://ubuntu.com/advantage.\nubuntu_advantage:\n  token: <ua_contract_token>\n"
-    },
-    "name": "cc_ubuntu_advantage_example_0",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# Attach the machine to an Ubuntu Advantage support contract enabling\n# only fips and esm services. Services will only be enabled if\n# the environment supports said service. Otherwise warnings will\n# be logged for incompatible services specified.\nubuntu_advantage:\n  token: <ua_contract_token>\n  enable:\n  - fips\n  - esm\n"
-    },
-    "name": "cc_ubuntu_advantage_example_1",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# Attach the machine to an Ubuntu Advantage support contract and enable\n# the FIPS service.  Perform a reboot once cloud-init has\n# completed.\npower_state:\n  mode: reboot\nubuntu_advantage:\n  token: <ua_contract_token>\n  enable:\n  - fips\n"
-    },
-    "name": "cc_ubuntu_advantage_example_2",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# Set a http(s) proxy before attaching the machine to an\n# Ubuntu Advantage support contract and enabling the FIPS service.\nubuntu_advantage:\n  token: <ua_contract_token>\n  config:\n    http_proxy: 'http://some-proxy:8088'\n    https_proxy: 'https://some-proxy:8088'\n    global_apt_https_proxy: 'https://some-global-apt-proxy:8088/'\n    global_apt_http_proxy: 'http://some-global-apt-proxy:8088/'\n    ua_apt_http_proxy: 'http://10.0.10.10:3128'\n    ua_apt_https_proxy: 'https://10.0.10.10:3128'\n  enable:\n  - fips\n"
-    },
-    "name": "cc_ubuntu_advantage_example_3",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# On Ubuntu PRO instances, auto-attach but enable no PRO services.\nubuntu_advantage:\n  enable: []\n  enable_beta: []\n"
-    },
-    "name": "cc_ubuntu_advantage_example_4",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# Enable esm and beta realtime-kernel services in Ubuntu Pro instances.\nubuntu_advantage:\n  enable:\n  - esm\n  enable_beta:\n  - realtime-kernel\n"
-    },
-    "name": "cc_ubuntu_advantage_example_5",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
-      "payload": "# Disable auto-attach in Ubuntu Pro instances.\nubuntu_advantage:\n  features:\n    disable_auto_attach: True\n"
-    },
-    "name": "cc_ubuntu_advantage_example_6",
-    "out": {
-      "json": {
-        "annotations": [],
-        "errors": [],
-        "is_valid": true
-      },
-      "status_code": 200
-    }
-  },
-  {
-    "in": {
       "payload": "# Tell the live-server installer to provide dhcp6 network config\n# and LVM on a disk matching the serial number prefix CT\nautoinstall:\n  version: 1\n  network:\n    version: 2\n    ethernets:\n      enp0s31f6:\n        dhcp6: yes\n  storage:\n    layout:\n      name: lvm\n      match:\n        serial: CT*\n"
     },
     "name": "cc_ubuntu_autoinstall_example_0",
@@ -1250,6 +1152,104 @@
       "payload": "drivers:\n  nvidia:\n    license-accepted: true\n"
     },
     "name": "cc_ubuntu_drivers_example_0",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Attach the machine to an Ubuntu Pro support contract with a\n# Pro contract token obtained from https://ubuntu.com/pro.\nubuntu_pro:\n  token: <ubuntu_pro_token>\n"
+    },
+    "name": "cc_ubuntu_pro_example_0",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Attach the machine to an Ubuntu Pro support contract enabling\n# only fips and esm services. Services will only be enabled if\n# the environment supports said service. Otherwise warnings will\n# be logged for incompatible services specified.\nubuntu_pro:\n  token: <ubuntu_pro_token>\n  enable:\n  - fips\n  - esm\n"
+    },
+    "name": "cc_ubuntu_pro_example_1",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Attach the machine to an Ubuntu Pro support contract and enable\n# the FIPS service.  Perform a reboot once cloud-init has\n# completed.\npower_state:\n  mode: reboot\nubuntu_pro:\n  token: <ubuntu_pro_token>\n  enable:\n  - fips\n"
+    },
+    "name": "cc_ubuntu_pro_example_2",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Set a http(s) proxy before attaching the machine to an\n# Ubuntu Pro support contract and enabling the FIPS service.\nubuntu_pro:\n  token: <ubuntu_pro_token>\n  config:\n    http_proxy: 'http://some-proxy:8088'\n    https_proxy: 'https://some-proxy:8088'\n    global_apt_https_proxy: 'https://some-global-apt-proxy:8088/'\n    global_apt_http_proxy: 'http://some-global-apt-proxy:8088/'\n    ua_apt_http_proxy: 'http://10.0.10.10:3128'\n    ua_apt_https_proxy: 'https://10.0.10.10:3128'\n  enable:\n  - fips\n"
+    },
+    "name": "cc_ubuntu_pro_example_3",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# On Ubuntu PRO instances, auto-attach but enable no PRO services.\nubuntu_pro:\n  enable: []\n  enable_beta: []\n"
+    },
+    "name": "cc_ubuntu_pro_example_4",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Enable esm and beta realtime-kernel services in Ubuntu Pro instances.\nubuntu_pro:\n  enable:\n  - esm\n  enable_beta:\n  - realtime-kernel\n"
+    },
+    "name": "cc_ubuntu_pro_example_5",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Disable auto-attach in Ubuntu Pro instances.\nubuntu_pro:\n  features:\n    disable_auto_attach: True\n"
+    },
+    "name": "cc_ubuntu_pro_example_6",
     "out": {
       "json": {
         "annotations": [],
@@ -1345,7 +1345,7 @@
   },
   {
     "in": {
-      "payload": "# Set hostname to \"external.fqdn.me\" instead of \"myhost\"\nfqdn: external.fqdn.me\nhostname: myhost\nprefer_fqdn_over_hostname: true\n"
+      "payload": "# Set hostname to \"external.fqdn.me\" instead of \"myhost\"\nfqdn: external.fqdn.me\nhostname: myhost\nprefer_fqdn_over_hostname: true\ncreate_hostname_file: true\n"
     },
     "name": "cc_update_hostname_example_3",
     "out": {
@@ -1362,6 +1362,20 @@
       "payload": "# Set hostname to \"external\" instead of \"external.fqdn.me\" when\n# cloud metadata provides the ``local-hostname``: \"external.fqdn.me\".\nprefer_fqdn_over_hostname: false\n"
     },
     "name": "cc_update_hostname_example_4",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# On a machine without an ``/etc/hostname`` file, don't create it\n# In most clouds, this will result in a DHCP-configured hostname\n# provided by the cloud\ncreate_hostname_file: false\n"
+    },
+    "name": "cc_update_hostname_example_5",
     "out": {
       "json": {
         "annotations": [],
@@ -1415,7 +1429,7 @@
   },
   {
     "in": {
-      "payload": "# On a system with SELinux enabled, add youruser and set the\n# SELinux user to 'staff_u'. When omitted on SELinux, the system will\n# select the configured default SELinux user.\nusers:\n- default\n- name: youruser\n  selinux_user: staff_u\n"
+      "payload": "# Skip creation of the <default> user and only create newsuper.\n# Password-based login is rejected, but the github user TheRealFalcon\n# and the launchpad user falcojr can SSH as newsuper. doas/opendoas\n# is configured to permit this user to run commands as other users\n# (without being prompted for a password) except not as root.\nusers:\n- name: newsuper\n  gecos: Big Stuff\n  groups: users, admin\n  doas:\n    - permit nopass newsuper\n    - deny newsuper as root\n  lock_passwd: true\n  ssh_import_id:\n    - lp:falcojr\n    - gh:TheRealFalcon\n"
     },
     "name": "cc_users_groups_example_3",
     "out": {
@@ -1429,7 +1443,7 @@
   },
   {
     "in": {
-      "payload": "# To redirect a legacy username to the <default> user for a\n# distribution, ssh_redirect_user will accept an SSH connection and\n# emit a message telling the client to ssh as the <default> user.\n# SSH clients will get the message:\nusers:\n- default\n- name: nosshlogins\n  ssh_redirect_user: true\n"
+      "payload": "# On a system with SELinux enabled, add youruser and set the\n# SELinux user to 'staff_u'. When omitted on SELinux, the system will\n# select the configured default SELinux user.\nusers:\n- default\n- name: youruser\n  selinux_user: staff_u\n"
     },
     "name": "cc_users_groups_example_4",
     "out": {
@@ -1443,7 +1457,7 @@
   },
   {
     "in": {
-      "payload": "# Override any ``default_user`` config in /etc/cloud/cloud.cfg with\n# supplemental config options.\n# This config will make the default user to mynewdefault and change\n# the user to not have sudo rights.\nssh_import_id: [chad.smith]\nuser:\n  name: mynewdefault\n  sudo: null\n"
+      "payload": "# To redirect a legacy username to the <default> user for a\n# distribution, ssh_redirect_user will accept an SSH connection and\n# emit a message telling the client to ssh as the <default> user.\n# SSH clients will get the message:\nusers:\n- default\n- name: nosshlogins\n  ssh_redirect_user: true\n"
     },
     "name": "cc_users_groups_example_5",
     "out": {
@@ -1457,9 +1471,23 @@
   },
   {
     "in": {
-      "payload": "# Avoid creating any ``default_user``.\nusers: []\n"
+      "payload": "# Override any ``default_user`` config in /etc/cloud/cloud.cfg with\n# supplemental config options.\n# This config will make the default user to mynewdefault and change\n# the user to not have sudo rights.\nssh_import_id: [chad.smith]\nuser:\n  name: mynewdefault\n  sudo: null\n"
     },
     "name": "cc_users_groups_example_6",
+    "out": {
+      "json": {
+        "annotations": [],
+        "errors": [],
+        "is_valid": true
+      },
+      "status_code": 200
+    }
+  },
+  {
+    "in": {
+      "payload": "# Avoid creating any ``default_user``.\nusers: []\n"
+    },
+    "name": "cc_users_groups_example_7",
     "out": {
       "json": {
         "annotations": [],
@@ -1513,7 +1541,7 @@
   },
   {
     "in": {
-      "payload": "# Provide gziped binary content\nwrite_files:\n- encoding: gzip\n  content: !!binary |\n      H4sIAIDb/U8C/1NW1E/KzNMvzuBKTc7IV8hIzcnJVyjPL8pJ4QIA6N+MVxsAAAA=\n  path: /usr/bin/hello\n  permissions: '0755'\n"
+      "payload": "# Provide gzipped binary content\nwrite_files:\n- encoding: gzip\n  content: !!binary |\n      H4sIAIDb/U8C/1NW1E/KzNMvzuBKTc7IV8hIzcnJVyjPL8pJ4QIA6N+MVxsAAAA=\n  path: /usr/bin/hello\n  permissions: '0755'\n"
     },
     "name": "cc_write_files_example_2",
     "out": {

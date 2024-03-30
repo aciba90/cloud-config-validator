@@ -1,6 +1,6 @@
   [
     {
-      "name": "out-of-schema",
+      "name": "no-header-additional-properties",
       "in": {
         "format": "yaml",
         "payload": "asdfaf: 1"
@@ -13,6 +13,10 @@
             {
               "description": "Cloud-config needs to begin with \"#cloud-config\"",
               "instance_path": ""
+            },
+            {
+              "description": "Additional properties are not allowed ('asdfaf' was unexpected)",
+              "instance_path": ""
             }
           ],
           "is_valid": false
@@ -20,7 +24,7 @@
       }
     },
     {
-      "name": "out-of-schema-header",
+      "name": "additional-properties",
       "in": {
         "format": "yaml",
         "payload": "#cloud-config\nasdfaf: 1"
@@ -29,8 +33,13 @@
         "status_code": 200,
         "json": {
           "annotations": [],
-          "errors": [],
-          "is_valid": true
+          "errors": [
+            {
+              "description": "Additional properties are not allowed ('asdfaf' was unexpected)",
+              "instance_path": ""
+            }
+          ],
+          "is_valid": false
         }
       }
     },
