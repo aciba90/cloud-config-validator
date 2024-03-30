@@ -22,7 +22,8 @@ use crate::validator::Validator;
 
 #[derive(Debug)]
 pub struct AppState {
-    pub validator: Validator,
+    pub cc_validator: Validator,
+    pub nc_validator: Validator,
 }
 
 #[tracing::instrument(level = "info", skip(state, payload))] // do not leak the payload
@@ -50,23 +51,47 @@ pub async fn validate(
         let resp = state
             .read()
             .expect("error unlocking state")
-            .validator
+            .cc_validator
             .validate_yaml(payload.payload());
         let _ = send.send(resp);
     });
     let resp = recv.await.expect("Panic in rayon::spawn")?;
+    let resp = serde_json::to_value(resp).expect("Validation response must be serializable");
+    Ok((StatusCode::OK, response::Json(resp)))
+}
 
+#[tracing::instrument(level = "info", skip(state, payload))] // do not leak the payload
+pub async fn nc_validate(
+    State(state): State<Arc<RwLock<AppState>>>,
+    Json(payload): Json<CloudConfig>,
+) -> Result<impl IntoResponse, ApiError> {
+    let (send, recv) = tokio::sync::oneshot::channel();
+    rayon::spawn(move || {
+        let resp = state
+            .read()
+            .expect("error unlocking state")
+            .nc_validator
+            .validate_yaml(payload.payload());
+        let _ = send.send(resp);
+    });
+    let resp = recv.await.expect("Panic in rayon::spawn")?;
     let resp = serde_json::to_value(resp).expect("Validation response must be serializable");
     Ok((StatusCode::OK, response::Json(resp)))
 }
 
 pub async fn create_api() -> Router {
-    let kind = ConfigKind::CloudConfig;
-    let validator = match Validator::new(kind.clone()).await {
+    let cc_validator = match Validator::new(ConfigKind::CloudConfig).await {
         Err(e) => panic!("Error reading the JsonSchema: {}", e),
         Ok(v) => v,
     };
-    let app_state = AppState { validator };
+    let nc_validator = match Validator::new(ConfigKind::NetworkConfig).await {
+        Err(e) => panic!("Error reading the JsonSchema: {}", e),
+        Ok(v) => v,
+    };
+    let app_state = AppState {
+        cc_validator,
+        nc_validator,
+    };
     let shared_state = Arc::new(RwLock::new(app_state));
 
     // spawn job to refresh the schema periodically
@@ -79,8 +104,8 @@ pub async fn create_api() -> Router {
             loop {
                 interval.tick().await;
                 tracing::info!("refreshing cloud-config jsonschema");
-                let validator = Validator::new(kind.clone()).await;
-                match validator {
+                let cc_validator = Validator::new(ConfigKind::CloudConfig).await;
+                match cc_validator {
                     Err(e) => {
                         tracing::error!(
                             "Error reading new JsonSchema. Re-using the previous one: {}",
@@ -91,7 +116,24 @@ pub async fn create_api() -> Router {
                         shared_state
                             .write()
                             .expect("Error locking `ApiState`")
-                            .validator = validator
+                            .cc_validator = validator
+                    }
+                };
+
+                tracing::info!("refreshing network-config jsonschema");
+                let nc_validator = Validator::new(ConfigKind::NetworkConfig).await;
+                match nc_validator {
+                    Err(e) => {
+                        tracing::error!(
+                            "Error reading new JsonSchema. Re-using the previous one: {}",
+                            e
+                        )
+                    }
+                    Ok(validator) => {
+                        shared_state
+                            .write()
+                            .expect("Error locking `ApiState`")
+                            .nc_validator = validator
                     }
                 };
             }
@@ -101,6 +143,7 @@ pub async fn create_api() -> Router {
     Router::new()
         .route("/", get(|| async { Json(json!(["/v1"])) }))
         .route("/v1/cloud-config/validate", post(validate))
+        .route("/v1/network-config/validate", post(nc_validate))
         .layer(TraceLayer::new_for_http())
         .with_state(shared_state)
 }
@@ -133,5 +176,41 @@ mod test {
             .await;
         assert_eq!(res.status_code(), StatusCode::BAD_REQUEST);
         assert_eq!(res.text(), "{\"errors\":[\"found unexpected end of stream at line 1 column 3, while scanning a quoted scalar\"]}");
+    }
+
+    #[tokio::test]
+    async fn nc_valid_yaml() {
+        let client = test_client().await;
+        let network_config = r#"
+network:
+  version: 1
+  config:
+  - type: bond
+    name: a
+    mac_address: aa:bb
+    mtu: 1
+    subnets:
+    - type: dhcp6
+      control: manual
+      netmask: 255.255.255.0
+      gateway: 10.0.0.1
+      dns_nameservers:
+      - 8.8.8.8
+      dns_search:
+      - find.me
+      routes:
+      - type: route
+        destination: 10.20.0.0/8
+        gateway: a.b.c.d
+        metric: 200"#;
+        let res = client
+            .post("/v1/network-config/validate")
+            .json(&json!({"payload": network_config}))
+            .await;
+        assert_eq!(res.status_code(), StatusCode::OK);
+        assert_eq!(
+            res.text(),
+            "{\"annotations\":[],\"errors\":[],\"is_valid\":true}"
+        );
     }
 }

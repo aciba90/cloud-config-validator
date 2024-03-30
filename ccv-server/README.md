@@ -22,19 +22,22 @@ To execute the unit test run `cargo test` and to run the integration tests run `
 ## API
 
 <details>
- <summary><code>POST</code> <code><b>/v1/cloud-config/validate</b></code> <code> Validates a cloud config, responding with JSONPointers pointing to errors and deprecations</code></summary>
+  <summary>
+    <code>POST</code> <code><b>/v1/{cloud-config,network-config}/validate</b></code>
+    <code> Validates a cloud-config or a network-config, responding with JSONPointers pointing to errors and deprecations</code>
+  </summary>
 
-### Parameters
+  ### Parameters
 
-> | name      |  type     | data type               | description                                                           |
-> |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
-> | None      |  required | JSON                    | See [Request body format](#request-body-format)                       |
+  > | name      |  type     | data type               | description                                                           |
+  > |-----------|-----------|-------------------------|-----------------------------------------------------------------------|
+  > | None      |  required | JSON                    | See [Request body format](#request-body-format)                       |
 
-### Responses
+  ### Responses
 
-> | http code     | content-type                      | response                                                            |
-> |---------------|-----------------------------------|---------------------------------------------------------------------|
-> | `200`         | `application/json`                | See [Response body format](#response-body-format)                   |
+  > | http code     | content-type                      | response                                                            |
+  > |---------------|-----------------------------------|---------------------------------------------------------------------|
+  > | `200`         | `application/json`                | See [Response body format](#response-body-format)                   |
 
 </details>
 
@@ -42,7 +45,7 @@ To execute the unit test run `cargo test` and to run the integration tests run `
 
 ```json
 {
-  "payload": "<cloud-config>"
+  "payload": "<cloud-config or networ-config>"
 }
 ```
 
