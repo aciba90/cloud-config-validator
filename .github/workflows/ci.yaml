@@ -18,17 +18,7 @@ env:
   RUST_BACKTRACE: short
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo check --all-targets
-
   test:
-    name: Test Suite
-    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,8 +26,6 @@ jobs:
       - run: cargo test
 
   fmt:
-    name: fmt
-    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,8 +35,6 @@ jobs:
       - run: cargo fmt --all -- --check
 
   clippy:
-    name: Clippy
-    needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

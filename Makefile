@@ -5,7 +5,7 @@ all: lint
 clean:
 	$(CARGO) clean
 
-lint: check fmt clippy
+lint: fmt clippy
 
 check:
 	$(CARGO) check --all --all-targets
