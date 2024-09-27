@@ -1,7 +1,12 @@
 use ccv_core::{schema::ConfigKind, validator::Validator};
 use clap::builder::TypedValueParser as _;
 use clap::Parser;
-use std::{fs, path::Path, path::PathBuf, process};
+use std::{
+    fs,
+    io::{self, Read},
+    path::{Path, PathBuf},
+    process,
+};
 
 #[derive(Parser)]
 #[command(name = "ccv", author, version, about, long_about = None)]
@@ -28,7 +33,9 @@ async fn main() -> process::ExitCode {
     let CCVCli::Validate(args) = CCVCli::parse();
 
     let payload = if Path::new("-") == args.file {
-        todo!("read stdin");
+        let mut buffer = Vec::new();
+        io::stdin().read_to_end(&mut buffer).unwrap();
+        String::from_utf8(buffer).unwrap()
     } else {
         let f = args.file;
         match fs::read_to_string(&f) {
